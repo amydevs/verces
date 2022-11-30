@@ -55,6 +55,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  actor         Json
+  webfinger     Json
 }
 
 model VerificationToken {
