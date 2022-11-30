@@ -1,8 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
-    console.log(req.query)
-    res.status(200).json({
+    const reference = req.query.reference;
+    if (typeof reference !== 'string') {
+        return res.status(400).send('Bad Response')
+    }
+    return res.status(200).json({
         "subject": "acct:alice@my-example.com",
     
         "links": [
