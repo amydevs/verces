@@ -1,20 +1,22 @@
-export function createActor(name: string, domain: string, pubkey: string) {
-    return {
-      '@context': [
-        'https://www.w3.org/ns/activitystreams',
-        'https://w3id.org/security/v1'
-      ],
-  
-      'id': `https://${domain}/u/${name}`,
-      'type': 'Person',
-      'preferredUsername': `${name}`,
-      'inbox': `https://${domain}/api/inbox`,
-      'followers': `https://${domain}/u/${name}/followers`,
-  
-      'publicKey': {
-        'id': `https://${domain}/u/${name}#main-key`,
-        'owner': `https://${domain}/u/${name}`,
-        'publicKeyPem': pubkey
+import crypto from 'crypto';
+
+export const generateKeyPair = async () => {
+  return await new Promise<{pub: string, priv: string}>((resolve, reject) => {
+    crypto.generateKeyPair('rsa', {
+      modulusLength: 4096,
+      publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem'
+      },
+      privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem'
       }
-    };
+    }, (err, pub, priv) => { 
+      if (err) {
+        reject("invalid key params")
+      }
+      resolve({pub, priv})
+    });
+  });
 }
