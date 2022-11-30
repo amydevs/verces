@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { type NextApiRequest, type NextApiResponse } from "next";
 
 const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
     const reference = req.query.reference;
