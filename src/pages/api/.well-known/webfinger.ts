@@ -8,7 +8,7 @@ const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
             {
                 "rel": "self",
                 "type": "application/activity+json",
-                "href": "https://my-example.com/actor"
+                "href": `https://${req.headers.host}/actor`
             }
         ]
     });
