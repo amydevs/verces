@@ -18,7 +18,7 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   });
   if (!foundUserActor) {
-    return res.status(400).send('Not Found')
+    return res.status(404).send('Not Found')
   }
   return res.status(200).json(foundUserActor.actor);
 };

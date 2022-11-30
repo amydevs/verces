@@ -18,7 +18,7 @@ const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const foundWebFinger = await prisma.user.findFirst({ where: { name: reference } });
     if (!foundWebFinger) {
-        return res.status(400).send('Not Found')
+        return res.status(404).send('Not Found')
     }
 
     return res.status(200).json(foundWebFinger.webfinger);
