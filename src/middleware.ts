@@ -4,12 +4,12 @@ import type { NextRequest } from 'next/server'
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-    const path = request.nextUrl.pathname+'/';
+    const path = request.nextUrl.pathname+'/'+request.nextUrl.search;
     if (path.startsWith('/.well-known/')) {
-        return NextResponse.rewrite(new URL(`/api${request.nextUrl.pathname}`, request.url))
+        return NextResponse.rewrite(new URL(`/api${path}`, request.url))
     }
     if (path.startsWith('/users/')) {
-        return NextResponse.rewrite(new URL(`/api${request.nextUrl.pathname}`, request.url))
+        return NextResponse.rewrite(new URL(`/api${path}`, request.url))
     }
 }
 
