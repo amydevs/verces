@@ -22,8 +22,7 @@ export const serverSchema = z.object({
   DISCORD_CLIENT_ID: z.string(),
   DISCORD_CLIENT_SECRET: z.string(),
     // ActivityPub
-  DOMAIN: z.string(),
-  PORT: z.string().optional()
+  HOST: z.string(),
 });
 
 /**

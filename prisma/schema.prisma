@@ -55,8 +55,16 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  actor         Json
-  webfinger     Json
+
+  KeyPair KeyPair?
+}
+
+model KeyPair {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  publicKey  String
+  privateKey String
 }
 
 model VerificationToken {
