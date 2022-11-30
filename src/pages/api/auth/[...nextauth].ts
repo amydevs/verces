@@ -6,7 +6,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
-import { generateKeyPair } from "server/activitypub/keypair.js";
+import { generateKeyPair } from "../../../server/activitypub/keypair.js";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session

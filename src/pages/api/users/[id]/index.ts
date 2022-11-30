@@ -1,7 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
-import crypto from "crypto";
-import { string } from "zod";
 import { env } from "env/server.mjs";
 
 const createActor = (name: string, domain: string, pubKey: string) => {
