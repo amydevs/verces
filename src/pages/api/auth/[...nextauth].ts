@@ -6,6 +6,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
+import { generateKeyPair } from "server/activitypub/keypair.js";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
@@ -18,18 +19,18 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
-    createUser({user}) {
-      prisma.keyPair.upsert({
+    async createUser({user}) {
+      const keys = await generateKeyPair();
+      await prisma.keyPair.upsert({
         where: {
           userId: user.id
         },
         update: {},
         create: {
           userId: user.id,
-          privateKey: "h",
-          publicKey: 'h',
+          ...keys
         }
-      })
+      });
     },
   },
   // Configure one or more authentication providers

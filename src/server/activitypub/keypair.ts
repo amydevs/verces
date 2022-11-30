@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 export const generateKeyPair = async () => {
-  return await new Promise<{pub: string, priv: string}>((resolve, reject) => {
+  return await new Promise<{publicKey: string, privateKey: string}>((resolve, reject) => {
     crypto.generateKeyPair('rsa', {
       modulusLength: 4096,
       publicKeyEncoding: {
@@ -12,11 +12,11 @@ export const generateKeyPair = async () => {
         type: 'pkcs8',
         format: 'pem'
       }
-    }, (err, pub, priv) => { 
+    }, (err, publicKey, privateKey) => { 
       if (err) {
         reject("invalid key params")
       }
-      resolve({pub, priv})
+      resolve({publicKey, privateKey})
     });
   });
 }
