@@ -89,9 +89,9 @@ model Status {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  replyToId String?
-  replyTo   Status?  @relation(name: "StatusReplies", fields: [replyToId], references: [id])
-  reply     Status[] @relation(name: "StatusReplies")
+  replyingToId String?
+  replyingTo   Status?  @relation(name: "StatusReplies", fields: [replyingToId], references: [id], onDelete: Cascade)
+  replies     Status[] @relation(name: "StatusReplies")
 
   replyUserId String?
 
