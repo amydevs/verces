@@ -59,7 +59,7 @@ model User {
   host    String   @default("") // Null if local instance user.
   keyPair KeyPair?
 
-  statuses Status[] @relation("UserStatuses")
+  statuses        Status[] @relation("UserStatuses")
   receivedReplies Status[] @relation("RepliesToUser")
 
   @@unique([name, host])
@@ -92,11 +92,10 @@ model Status {
 
   replyingToId String?
   replyingTo   Status?  @relation("StatusReplies", fields: [replyingToId], references: [id], onDelete: Cascade)
-  replies     Status[] @relation("StatusReplies")
+  replies      Status[] @relation("StatusReplies")
 
   replyingToUserId String?
-  replyingToUser User? @relation("RepliesToUser", fields: [replyingToUserId], references: [id])
-
+  replyingToUser   User?   @relation("RepliesToUser", fields: [replyingToUserId], references: [id])
 
   uri String? // The URI of a note. it will be null when the note is local.
   url String? // The human readable url of a note. it will be null when the note is local.
