@@ -59,7 +59,7 @@ model User {
   host    String   @default("") // Null if local instance user.
   keyPair KeyPair?
 
-  statuses        Status[]    @relation("UserStatuses")
+  statuses        Status[]
   receivedReplies Reply[]
 
   @@unique([name, host])
@@ -88,7 +88,7 @@ model Status {
   text String @db.Text
 
   userId String
-  user   User   @relation("UserStatuses", fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   replies    Reply[] @relation("StatusReplies")
   replyingTo Reply?
