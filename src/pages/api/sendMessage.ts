@@ -1,9 +1,13 @@
+import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { generateKeyPair } from "server/activitypub/keypair";
 
 import { prisma } from "../../server/db/client";
 
 const examples = async (req: NextApiRequest, res: NextApiResponse) => {
+    if (env.NODE_ENV !== "development") {
+        return res.status(400).send(400);
+    }
     const activityContentType = 'application/activity+json';
     const gotUser = await (await fetch("https://mastodon.social/@Gargron", {
         headers: {
@@ -61,7 +65,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
         body: JSON.stringify({
             "@context": "https://www.w3.org/ns/activitystreams",
         
-            "id": "https://${}/create-hello-world",
+            "id": `message`,
             "type": "Create",
             "actor": "https://my-example.com/actor",
         
