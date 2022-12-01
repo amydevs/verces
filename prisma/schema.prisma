@@ -49,14 +49,14 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  name          String    @unique
+  name          String   
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
 
-  host    String? // Null if local instance user.
+  host    String @default("") // Null if local instance user.
   keyPair KeyPair?
 
   statuses Status[]
