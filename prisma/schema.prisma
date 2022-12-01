@@ -49,13 +49,14 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?   @unique
+  name          String    @unique
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
 
+  host    String? // Null if local instance user.
   keyPair KeyPair?
 
   statuses Status[]
@@ -66,7 +67,7 @@ model KeyPair {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   publicKey  String
-  privateKey String
+  privateKey String?
 }
 
 model VerificationToken {
@@ -86,8 +87,7 @@ model Status {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  replyUserId   String
-  replyUserHost String
+  replyUserId String
 
   uri String? // The URI of a note. it will be null when the note is local.
   url String? // The human readable url of a note. it will be null when the note is local.
