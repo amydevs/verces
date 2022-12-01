@@ -18,7 +18,7 @@ const generateWebfinger = (name: string, domain: string) => {
 
 const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
     console.log(env.HOST);
-    let reference = req.query.reference;
+    let reference = req.query.resource;
     if (typeof reference !== 'string') {
         return res.status(400).send('Bad Response')
     }
