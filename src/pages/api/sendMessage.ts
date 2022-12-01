@@ -1,5 +1,6 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
+import { generateNoteWithReply } from "server/activitypub/note";
 import { getServerAuthSession } from "server/common/get-server-auth-session";
 
 import { prisma } from "../../server/db/client";
@@ -39,6 +40,14 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             }
         })
         const reply = await prisma.status.create({
+            include: {
+                replyingTo: {
+                    include: {
+                        replyingToStatus: true,
+                        replyingToUser: true
+                    }
+                }
+            },
             data: {
                 text: '<p>Hello world</p>',
                 userId: session.user.id,
@@ -52,7 +61,9 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                         replyingToStatus: {
                             create: {
                                 text: gotMessage.content,
-                                userId: receiver.id
+                                userId: receiver.id,
+                                uri: 'https://mastodon.social/@Gargron/100254678717223630',
+                                url: 'https://mastodon.social/@Gargron/100254678717223630'
                             }
                         }
                     }
@@ -67,19 +78,11 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             body: JSON.stringify({
                 "@context": "https://www.w3.org/ns/activitystreams",
             
-                "id": `message`,
+                "id": `https://${env.HOST}/users/${session.user.id}/statuses/${reply.id}`,
                 "type": "Create",
-                "actor": "https://my-example.com/actor",
+                "actor": "https://${env.HOST}/users/${session.user.id}",
             
-                "object": {
-                    "id": `https://${env.HOST}/users/${session.user.name}/statuses/${reply.id}`,
-                    "type": "Note",
-                    "published": reply.createdAt.toISOString(),
-                    "attributedTo": `https://${env.HOST}/users/${session.user.name}`,
-                    "inReplyTo": "https://mastodon.social/@Gargron/100254678717223630",
-                    "content": reply.text,
-                    "to": "https://www.w3.org/ns/activitystreams#Public"
-                }
+                "object": generateNoteWithReply(session.user.id, env.HOST, reply)
             })
         })
     }

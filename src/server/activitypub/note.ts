@@ -39,7 +39,7 @@ export const generateNoteWithReply = (name: string, domain: string, status: Stat
     const note = generateNote(name, domain, status);
     if (status.replyingTo) {
         if (status.replyingTo.replyingToStatus.uri) {
-            note.inReplyTo = status.replyingTo.replyingToStatus.uri
+            note.inReplyTo = status.replyingTo.replyingToStatus.url
         }
         else {
             note.inReplyTo = `https://${domain}/users/${status.replyingTo.replyingToUserId}/statuses/${status.replyingTo.replyingToStatusId}`
