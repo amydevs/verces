@@ -1,5 +1,6 @@
 import { type IObject } from "./type"
 import { type Prisma } from "@prisma/client"
+import { type } from "os"
 
 type StatusSmall = Prisma.StatusGetPayload<{
     select: {
@@ -21,4 +22,28 @@ export const generateNote = (name: string, domain: string, status: StatusSmall):
             'https://www.w3.org/ns/activitystreams#Public'
         ]
     }
+}
+
+type StatusSmallWithReply = StatusSmall & Prisma.StatusGetPayload<{
+    include: {
+        replyingTo: {
+            include: {
+                replyingToStatus: true,
+                replyingToUser: true
+            }
+        }
+    }
+}>
+
+export const generateNoteWithReply = (name: string, domain: string, status: StatusSmallWithReply) => {
+    const note = generateNote(name, domain, status);
+    if (status.replyingTo) {
+        if (status.replyingTo.replyingToStatus.uri) {
+            note.inReplyTo = status.replyingTo.replyingToStatus.uri
+        }
+        else {
+            note.inReplyTo = `https://${domain}/users/${status.replyingTo.replyingToUserId}/statuses/${status.replyingTo.replyingToStatusId}`
+        }
+    }
+    return note;
 }
