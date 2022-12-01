@@ -89,7 +89,7 @@ model Status {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  replyUserId String
+  replyUserId String?
 
   uri String? // The URI of a note. it will be null when the note is local.
   url String? // The human readable url of a note. it will be null when the note is local.
