@@ -16,10 +16,6 @@ export const authOptions: NextAuthOptions = {
         session.user.id = user.id;
       }
       return session;
-    },
-    jwt({token, account}) {
-      console.log(token, account)
-      return token; 
     }
   },
   events: {
@@ -49,7 +45,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.AUTH0_CLIENT_SECRET,
       issuer: env.AUTH0_ISSUER,
       profile(profile) {
-        console.log(profile)
         return {
           id: profile.sub,
           name: profile.preferred_username || profile.nickname,
