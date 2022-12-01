@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { env } from "../../../env/server.mjs";
+import { env } from "../../../../env/server.mjs";
 
 const hostMeta = async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('content-type', 'application/xrd+xml').send(

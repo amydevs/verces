@@ -1,6 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { prisma } from "../../../server/db/client";
-import { env } from "../../../env/server.mjs";
+import { prisma } from "../../../../server/db/client";
+import { env } from "../../../../env/server.mjs";
 
 const createWebfinger = (name: string, domain: string) => {
     return {

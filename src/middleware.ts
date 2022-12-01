@@ -6,10 +6,10 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname+'/'+request.nextUrl.search;
     if (path.startsWith('/.well-known/')) {
-        return NextResponse.rewrite(new URL(`/api${path}`, request.url));
+        return NextResponse.rewrite(new URL(`/api/parent${path}`, request.url));
     }
     if (path.startsWith('/users/')) {
-        return NextResponse.rewrite(new URL(`/api${path}`, request.url));
+        return NextResponse.rewrite(new URL(`/api/parent${path}`, request.url));
     }
     return NextResponse.next();
 }
