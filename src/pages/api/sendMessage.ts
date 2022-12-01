@@ -52,7 +52,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                 }
             }
         })
-        fetch(gotUser.inbox, {
+        await fetch(gotUser.inbox, {
             method: "POST",
             headers: {
                 'Content-Type': activityContentType
