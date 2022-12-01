@@ -1,8 +1,9 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
 import { env } from "env/server.mjs";
+import { type IActor } from "server/activitypub/type";
 
-const createActor = (name: string, domain: string, pubKey: string) => {
+const createActor = (name: string, domain: string, pubKey: string): IActor => {
   return {
     '@context': [
       'https://www.w3.org/ns/activitystreams',
@@ -13,6 +14,7 @@ const createActor = (name: string, domain: string, pubKey: string) => {
     'type': 'Person',
     'preferredUsername': `${name}`,
     'inbox': `https://${domain}/users/${name}/inbox`,
+    'outbox': `https://${domain}/users/${name}/outbox`,
     'followers': `https://${domain}/users/${name}/followers`,
 
     'publicKey': {

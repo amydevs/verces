@@ -9,7 +9,7 @@ export interface IObject {
 	published?: string;
 	cc?: ApObject;
 	to?: ApObject;
-	attributedTo: ApObject;
+	attributedTo?: ApObject;
 	attachment?: any[];
 	inReplyTo?: any;
 	replies?: ICollection;
@@ -162,6 +162,7 @@ export interface IActor extends IObject {
 	sharedInbox?: string;	// 後方互換性のため
 	publicKey?: {
 		id: string;
+		owner: string;
 		publicKeyPem: string;
 	};
 	followers?: string | ICollection | IOrderedCollection;
