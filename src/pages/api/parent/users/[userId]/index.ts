@@ -24,7 +24,7 @@ const createActor = (name: string, domain: string, pubKey: string) => {
 }
 
 const user = async (req: NextApiRequest, res: NextApiResponse) => {
-  const id = req.query.id;
+  const id = req.query.userId;
   if (typeof id !== 'string') {
     return res.status(400).send('Bad Request')
   }
