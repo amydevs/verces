@@ -17,6 +17,10 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    jwt({token, account}) {
+      console.log(token, account)
+      return token; 
+    }
   },
   events: {
     async createUser({user}) {
@@ -43,7 +47,16 @@ export const authOptions: NextAuthOptions = {
     Auth0Provider({
       clientId: env.AUTH0_CLIENT_ID,
       clientSecret: env.AUTH0_CLIENT_SECRET,
-      issuer: env.AUTH0_ISSUER
+      issuer: env.AUTH0_ISSUER,
+      profile(profile) {
+        console.log(profile)
+        return {
+          id: profile.sub,
+          name: profile.preferred_username || profile.nickname,
+          email: profile.email,
+          image: profile.picture,
+        }
+      },
     })
     // ...add more providers here
   ],
