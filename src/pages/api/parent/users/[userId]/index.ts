@@ -3,7 +3,7 @@ import { prisma } from "server/db/client";
 import { env } from "env/server.mjs";
 import { type IActor } from "server/activitypub/type";
 
-const createActor = (name: string, domain: string, pubKey: string): IActor => {
+const generateActor = (name: string, domain: string, pubKey: string): IActor => {
   return {
     '@context': [
       'https://www.w3.org/ns/activitystreams',
@@ -46,7 +46,7 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(404).send('Not Found')
   }
   
-  return res.status(200).json(createActor(foundUser.name, env.HOST,foundUser.keyPair?.publicKey));
+  return res.status(200).json(generateActor(foundUser.name, env.HOST,foundUser.keyPair?.publicKey));
 };
 
 export default user;

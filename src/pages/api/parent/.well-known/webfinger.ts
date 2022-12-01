@@ -2,7 +2,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "../../../../server/db/client";
 import { env } from "../../../../env/server.mjs";
 
-const createWebfinger = (name: string, domain: string) => {
+const generateWebfinger = (name: string, domain: string) => {
     return {
         'subject': `acct:${name}@${domain}`,
     
@@ -37,7 +37,7 @@ const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(404).send('Not Found')
     }
 
-    return res.status(200).json(createWebfinger(reference, env.HOST));
+    return res.status(200).json(generateWebfinger(reference, env.HOST));
 };
   
 export default webfinger;
