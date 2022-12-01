@@ -20,8 +20,15 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                 Accept: activityContentType
             }
         })).json()
-        const receiver = await prisma.user.create({
-            data: {
+        const receiver = await prisma.user.upsert({
+            where: {
+                name_host: {
+                    name: gotUser.preferredUsername,
+                    host: "mastodon.social"
+                }
+            },
+            update: {},
+            create: {
                 name: gotUser.preferredUsername,
                 host: "mastodon.social",
                 keyPair: {
