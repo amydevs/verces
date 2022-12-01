@@ -1,6 +1,5 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateKeyPair } from "server/activitypub/keypair";
 import { getServerAuthSession } from "server/common/get-server-auth-session";
 
 import { prisma } from "../../server/db/client";
@@ -29,23 +28,30 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                     create: {
                         publicKey: gotUser.publicKey.publicKeyPem
                     }
-                },
-                statuses: { 
-                    create: {
-                        text: gotMessage.content,
-                        uri: gotMessage.id,
-                        url: "https://mastodon.social/@Gargron/100254678717223630"
-                    } 
                 }
             }
         })
-        const message = await prisma.status.create({
+        const reply = await prisma.status.create({
             data: {
-                text: '<p>Hello World!</p>',
+                text: '<p>Hello world</p>',
                 userId: session.user.id,
-                
+                replyingTo: {
+                    create: {
+                        replyingToUser: {
+                            connect: {
+                                id: receiver.id
+                            }
+                        },
+                        replyingToStatus: {
+                            create: {
+                                text: gotMessage.content,
+                                userId: receiver.id
+                            }
+                        }
+                    }
+                }
             }
-        });
+        })
         fetch(gotUser.inbox, {
             method: "POST",
             headers: {
@@ -59,12 +65,12 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                 "actor": "https://my-example.com/actor",
             
                 "object": {
-                    "id": "https://my-example.com/hello-world",
+                    "id": `https://${env.HOST}/users/${session.user.name}/statuses/${reply.id}`,
                     "type": "Note",
-                    "published": "2018-06-23T17:17:11Z",
-                    "attributedTo": "https://my-example.com/actor",
+                    "published": reply.createdAt.toISOString(),
+                    "attributedTo": `https://${env.HOST}/users/${session.user.name}`,
                     "inReplyTo": "https://mastodon.social/@Gargron/100254678717223630",
-                    "content": "<p>Hello world</p>",
+                    "content": reply.text,
                     "to": "https://www.w3.org/ns/activitystreams#Public"
                 }
             })
