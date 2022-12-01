@@ -36,10 +36,7 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
       name: true
     },
     where: {
-      OR: {
-        id,
-        name: id
-      }
+      name: id
     }
   });
   if (!foundUser?.keyPair?.publicKey || !foundUser?.name) {
