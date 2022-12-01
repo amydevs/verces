@@ -70,7 +70,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                 }
             }
         })
-        await fetch(gotUser.inbox, {
+        return res.send(await fetch(gotUser.inbox, {
             method: "POST",
             headers: {
                 'Content-Type': activityContentType
@@ -84,7 +84,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             
                 "object": generateNoteWithReply(session.user.id, env.HOST, reply)
             })
-        })
+        }))
     }
     
     res.send('help')
