@@ -15,10 +15,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
         },
         where: {
             user: {
-                OR: {
-                    id: userId,
-                    name: userId
-                }
+                id: userId
             },
             id: statusId
         }
