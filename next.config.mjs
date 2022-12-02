@@ -13,5 +13,24 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  async rewrites() {
+    return [
+      {
+        source: '/.well-known/:path*',
+        destination: '/api/parent/.well-known/:path*'
+      },
+      {
+        source: '/users/:user*',
+        destination: '/api/parent/users/:user*',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: 'application/activity+json'
+          }
+        ]
+      }
+    ]
+  }
 };
 export default config;
