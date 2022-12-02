@@ -57,7 +57,8 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                         publicKey: receiverActor.publicKey.publicKeyPem
                     }
                 },
-                uri: receiverActorUrl
+                uri: receiverActorUrl,
+                url: receiverActorUrl
             }
         })
         const receiverStatus = await prisma.status.upsert({
