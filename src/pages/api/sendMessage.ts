@@ -116,7 +116,8 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                 'Signature': header
             }
         });
-        return res.send(`${JSON.stringify(resp)}\n\n\n${await resp.text()}`);
+        console.log(resp)
+        return res.send(`${resp.status}\n\n\n${await resp.text()}`);
     }
     
     res.send('help')
