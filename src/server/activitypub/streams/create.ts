@@ -1,6 +1,6 @@
-import { type IActivity } from "../type";
+import { type IPost, type IActivity } from "../type";
 
-export const generateCreate = (name: string, domain: string, note: IActivity) => {
+export const generateCreate = (name: string, domain: string, note: IPost): IActivity => {
     const actor = `https://${domain}/users/${name}/statuses/${note.id}`;
     const createMessage: IActivity = {
         '@context': 'https://www.w3.org/ns/activitystreams',
