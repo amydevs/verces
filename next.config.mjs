@@ -31,8 +31,26 @@ const config = {
         ]
       },
       {
-        source: '/@:path*',
-        destination: '/@/:path*'
+        source: '/@/:user',
+        destination: '/api/parent/users/:user',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: '(?<b>.*application\\/activity\\+json.*)'
+          }
+        ]
+      },
+      {
+        source: '/@/:user/:status*',
+        destination: '/api/parent/users/:user/statuses/:status*',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: '(?<b>.*application\\/activity\\+json.*)'
+          }
+        ]
       }
     ]
   },
