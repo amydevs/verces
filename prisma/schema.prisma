@@ -56,15 +56,16 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  host    String   @default("") // Empty if local instance to allow for unique check.
+  host String @default("") // Empty if local instance to allow for unique check.
 
-  uri     String   @default("")
-  url     String?
+  uri String  @default("")
+  url String?
 
   keyPair KeyPair?
 
-  statuses        Status[]
-  receivedReplies Reply[]
+  statuses         Status[]
+  receivedReplies  Reply[]
+  receivedMentions Mention[]
 
   @@unique([name, host])
 }
@@ -94,10 +95,11 @@ model Status {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  replies    Reply[] @relation("StatusReplies")
+  mentions   Mention[]
+  replies    Reply[]   @relation("StatusReplies")
   replyingTo Reply?
 
-  uri String @default("") // The URI of a note. it will be empty when the note is local.
+  uri String  @default("") // The URI of a note. it will be empty when the note is local.
   url String? // The human readable url of a note. it will be null when the note is local.
 }
 
@@ -110,4 +112,17 @@ model Reply {
 
   replyingToUserId String
   replyingToUser   User   @relation(fields: [replyingToUserId], references: [id], onDelete: Cascade)
+}
+
+model Mention {
+  id String @id @default(cuid())
+
+  statusId String
+  status   Status @relation(fields: [statusId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
