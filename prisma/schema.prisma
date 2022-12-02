@@ -99,6 +99,8 @@ model Status {
   replies    Reply[]   @relation("StatusReplies")
   replyingTo Reply?
 
+  visibility Visibility @default(Public)
+
   uri String  @default("") // The URI of a note. it will be empty when the note is local.
   url String? // The human readable url of a note. it will be null when the note is local.
 }
@@ -125,4 +127,11 @@ model Mention {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+enum Visibility {
+  Public
+  Unlisted
+  FollowOnly
+  MentionOnly
 }
