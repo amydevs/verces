@@ -1,4 +1,4 @@
-import { type IObject } from "../type"
+import { IPost, type IActivity } from "../type"
 import { type Prisma } from "@prisma/client"
 
 export const statusInclude = {
@@ -19,8 +19,8 @@ export const statusInclude = {
 
 type StatusSmall = Prisma.StatusGetPayload<typeof statusInclude>
 
-export const generateNote = (name: string, domain: string, status: StatusSmall): IObject => {
-    const note: IObject = {
+export const generateNote = (name: string, domain: string, status: StatusSmall): IPost => {
+    const note: IPost = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': `https://${domain}/users/${name}/statuses/${status.id}`,
         'type': 'Note',
@@ -31,8 +31,8 @@ export const generateNote = (name: string, domain: string, status: StatusSmall):
             'https://www.w3.org/ns/activitystreams#Public'
         ],
         'cc': [
-            `https://${domain}/users/${name}/followers`, 
-        ]
+            `https://${domain}/users/${name}/followers`,
+        ],
     }
     if (status.replyingTo) {
         if (status.replyingTo.replyingToStatus.uri) {
