@@ -1,6 +1,6 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateNoteWithReply } from "server/activitypub/note";
+import { generateNoteWithReply } from "server/activitypub/streams/note";
 import { prisma } from "server/db/client";
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {

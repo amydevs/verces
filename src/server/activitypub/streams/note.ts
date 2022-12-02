@@ -1,6 +1,5 @@
-import { type IObject } from "./type"
+import { type IObject } from "../type"
 import { type Prisma } from "@prisma/client"
-import { type } from "os"
 
 type StatusSmall = Prisma.StatusGetPayload<{
     select: {
