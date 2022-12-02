@@ -11,6 +11,7 @@ const generateActor = (name: string, domain: string, pubKey: string): IActor => 
     ],
 
     'id': `https://${domain}/users/${name}`,
+    'attributedTo': `https://${domain}/users/${name}`,
     'type': 'Person',
     'preferredUsername': `${name}`,
     'inbox': `https://${domain}/users/${name}/inbox`,

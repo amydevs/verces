@@ -162,6 +162,7 @@ export interface IActor extends IObject {
 	sharedInbox?: string;	// 後方互換性のため
 	publicKey?: {
 		id: string;
+		owner?: ApObject;
 		publicKeyPem: string;
 	};
 	followers?: string | ICollection | IOrderedCollection;
