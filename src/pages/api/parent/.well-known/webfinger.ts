@@ -17,7 +17,6 @@ const generateWebfinger = (name: string, domain: string) => {
 }
 
 const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
-    console.log(env.HOST);
     let reference = req.query.resource;
     if (typeof reference !== 'string') {
         return res.status(400).send('Bad Response')
@@ -27,12 +26,12 @@ const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
     if (reference.startsWith(acct)) {
         reference = reference.substring(acct.length)
     }
-    const lastIndexOfAt = reference.lastIndexOf('@');
-    if (lastIndexOfAt !== -1) {
-        reference = reference.substring(0, lastIndexOfAt);
+    const [username, host] = reference.split("@", 1);
+    if (host !== env.HOST) {
+        return res.status(404).send('Not Found')
     }
 
-    const foundWebFinger = await prisma.user.findFirst({ where: { name: reference, host: "" } });
+    const foundWebFinger = await prisma.user.findFirst({ where: { name: username, host: "" } });
     if (!foundWebFinger) {
         return res.status(404).send('Not Found')
     }
