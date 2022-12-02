@@ -27,7 +27,7 @@ export const generateNote = (name: string, domain: string, status: StatusSmall):
         'published': status.createdAt.toISOString(),
         'attributedTo': `https://${domain}/users/${name}`,
         'content': status.text,
-        'url': `https://${domain}/@/${name}/${status.id}`
+        'url': `https://${domain}/@/${name}/${status.id}`,
     }
 
     // set replying
