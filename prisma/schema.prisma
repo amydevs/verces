@@ -56,8 +56,10 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  host    String   @default("") // Empty if local instance to allow for unique check..
-  uri     String?
+  host    String   @default("") // Empty if local instance to allow for unique check.
+
+  uri     String   @default("")
+  url     String?
 
   keyPair KeyPair?
 
@@ -95,7 +97,7 @@ model Status {
   replies    Reply[] @relation("StatusReplies")
   replyingTo Reply?
 
-  uri String? // The URI of a note. it will be null when the note is local.
+  uri String @default("") // The URI of a note. it will be empty when the note is local.
   url String? // The human readable url of a note. it will be null when the note is local.
 }
 
