@@ -15,7 +15,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
         },
         where: {
             user: {
-                id: userId
+                name: userId
             },
             id: statusId
         }
