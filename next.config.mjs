@@ -26,7 +26,7 @@ const config = {
           {
             type: 'header',
             key: 'accept',
-            value: 'application/activity+json'
+            value: '(?<a>.*application\\/activity\\+json.*)'
           }
         ]
       }
