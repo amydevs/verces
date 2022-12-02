@@ -17,11 +17,11 @@ const config = {
     return [
       {
         source: '/.well-known/:path*',
-        destination: '/api/parent/.well-known/:path*'
+        destination: '/api/ap/.well-known/:path*'
       },
       {
         source: '/users/:user*',
-        destination: '/api/parent/users/:user*',
+        destination: '/api/ap/users/:user*',
         has: [
           {
             type: 'header',
@@ -32,7 +32,7 @@ const config = {
       },
       {
         source: '/@/:user',
-        destination: '/api/parent/users/:user',
+        destination: '/api/ap/users/:user',
         has: [
           {
             type: 'header',
@@ -43,7 +43,7 @@ const config = {
       },
       {
         source: '/@/:user/:status*',
-        destination: '/api/parent/users/:user/statuses/:status*',
+        destination: '/api/ap/users/:user/statuses/:status*',
         has: [
           {
             type: 'header',
