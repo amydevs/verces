@@ -51,7 +51,7 @@ export const generateNote = (name: string, domain: string, status: StatusSmall):
     }
     const mentions = status.mentions.map(e => {
         const { uri } = e.user;
-        if (uri.length !== 0) {
+        if (uri?.length) {
             return uri
         }
         return `https://${domain}/users/${e.user.name}`;
