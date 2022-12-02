@@ -13,24 +13,52 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/.well-known/:path*',
-  //       destination: '/api/parent/.well-known/:path*'
-  //     },
-  //     {
-  //       source: '/users/:user*',
-  //       destination: '/api/parent/users/:user*',
-  //       has: [
-  //         {
-  //           type: 'header',
-  //           key: 'accept',
-  //           value: '(?<a>.*application\\/activity\\+json.*)'
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
+  async rewrites() {
+    return [
+      {
+        source: '/.well-known/:path*',
+        destination: '/api/parent/.well-known/:path*'
+      },
+      {
+        source: '/users/:user*',
+        destination: '/api/parent/users/:user*',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: '(?<a>.*application\\/activity\\+json.*)'
+          }
+        ]
+      }
+    ]
+  },
+  async redirects () {
+    return [
+      {       
+        source: '/users/:user',
+        destination: '/:user',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: '(?<a>^((?!application\\/activity\\+json).)*$)'
+          }
+        ],
+        permanent: true
+      },
+      {       
+        source: '/users/:user/statuses/:status',
+        destination: '/:user/:status',
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: '(?<a>^((?!application\\/activity\\+json).)*$)'
+          }
+        ],
+        permanent: true
+      }
+    ]
+  }
 };
 export default config;
