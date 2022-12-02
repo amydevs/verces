@@ -32,7 +32,7 @@ const config = {
       },
       {
         source: '/@:path*',
-        destination: '/@/:path'
+        destination: '/@/:path*'
       }
     ]
   },
