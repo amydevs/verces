@@ -1,4 +1,4 @@
-import { IPost, type IActivity } from "../type"
+import { type IPost } from "../type"
 import { type Prisma } from "@prisma/client"
 
 export const statusInclude = {

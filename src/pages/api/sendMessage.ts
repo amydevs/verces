@@ -10,7 +10,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
     const activityContentType = 'application/activity+json';
 
     
-    if (session?.user?.id) {
+    if (session?.user?.name) {
         const gotUser = await (await fetch("https://mastodon.social/@Gargron", {
             headers: {
                 Accept: activityContentType
@@ -75,7 +75,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                 "type": "Create",
                 "actor": "https://${env.HOST}/users/${session.user.id}",
             
-                "object": generateNote(session.user.id, env.HOST, reply)
+                "object": generateNote(session.user.name, env.HOST, reply)
             })
         }))
     }
