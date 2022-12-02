@@ -4,12 +4,15 @@ import type { NextRequest } from 'next/server'
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
+    const acivitypubContentType = 'application/activity+json';
     const path = request.nextUrl.pathname+'/'+request.nextUrl.search;
-    if (path.startsWith('/.well-known/')) {
-        return NextResponse.rewrite(new URL(`/api/parent${path}`, request.url));
-    }
-    if (path.startsWith('/users/')) {
-        return NextResponse.rewrite(new URL(`/api/parent${path}`, request.url));
+    if (request.headers.get("accept")?.includes(acivitypubContentType)) {
+        if (path.startsWith('/.well-known/')) {
+            return NextResponse.rewrite(new URL(`/api/parent${path}`, request.url));
+        }
+        if (path.startsWith('/users/')) {
+            return NextResponse.rewrite(new URL(`/api/parent${path}`, request.url));
+        }
     }
     return NextResponse.next();
 }
