@@ -1,6 +1,6 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateNote } from "server/activitypub/streams/note";
+import { generateNote, statusInclude } from "server/activitypub/streams/note";
 import { prisma } from "server/db/client";
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -9,14 +9,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(400).send('Bad Request')
     }
     const foundStatus = await prisma.status.findFirst({
-        include: {
-            replyingTo: {
-                include: {
-                    replyingToStatus: true,
-                    replyingToUser: true
-                }
-            }
-        },
+        ...statusInclude,
         where: {
             user: {
                 OR: {

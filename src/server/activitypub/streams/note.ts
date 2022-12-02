@@ -1,7 +1,7 @@
 import { type IObject } from "../type"
 import { type Prisma } from "@prisma/client"
 
-type StatusSmall = Prisma.StatusGetPayload<{
+export const statusInclude = {
     include: {
         replyingTo: {
             include: {
@@ -15,7 +15,9 @@ type StatusSmall = Prisma.StatusGetPayload<{
             }
         }
     }
-}>
+}
+
+type StatusSmall = Prisma.StatusGetPayload<typeof statusInclude>
 
 export const generateNote = (name: string, domain: string, status: StatusSmall): IObject => {
     const note: IObject = {
@@ -40,7 +42,7 @@ export const generateNote = (name: string, domain: string, status: StatusSmall):
             note.inReplyTo = `https://${domain}/users/${status.replyingTo.replyingToUser.name}/statuses/${status.replyingTo.replyingToStatusId}`
         }             
     }
-    
+
     if (!note.cc) {
         note.cc = [`https://${domain}/users/${name}/followers`]
     }

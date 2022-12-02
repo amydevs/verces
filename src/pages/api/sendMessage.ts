@@ -1,6 +1,6 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateNote } from "server/activitypub/streams/note";
+import { generateNote, statusInclude } from "server/activitypub/streams/note";
 import { getServerAuthSession } from "server/common/get-server-auth-session";
 
 import { prisma } from "../../server/db/client";
@@ -40,14 +40,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             }
         })
         const reply = await prisma.status.create({
-            include: {
-                replyingTo: {
-                    include: {
-                        replyingToStatus: true,
-                        replyingToUser: true
-                    }
-                }
-            },
+            ...statusInclude,
             data: {
                 text: '<p>Hello world</p>',
                 userId: session.user.id,
