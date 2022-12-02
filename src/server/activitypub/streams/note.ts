@@ -1,5 +1,5 @@
 import { type IPost } from "../type"
-import { type Prisma } from "@prisma/client"
+import { Visibility, type Prisma } from "@prisma/client"
 
 export const statusInclude = {
     include: {
@@ -27,13 +27,9 @@ export const generateNote = (name: string, domain: string, status: StatusSmall):
         'published': status.createdAt.toISOString(),
         'attributedTo': `https://${domain}/users/${name}`,
         'content': status.text,
-        'to': [
-            'https://www.w3.org/ns/activitystreams#Public'
-        ],
-        'cc': [
-            `https://${domain}/users/${name}/followers`,
-        ],
     }
+
+    // set replying
     if (status.replyingTo) {
         if (status.replyingTo.replyingToStatus.uri) {
             note.inReplyTo = status.replyingTo.replyingToStatus.url
@@ -43,20 +39,37 @@ export const generateNote = (name: string, domain: string, status: StatusSmall):
         }             
     }
 
-    if (!note.cc) {
-        note.cc = [`https://${domain}/users/${name}/followers`]
+    // set to and cc
+    const publicStream = 'https://www.w3.org/ns/activitystreams#Public';
+    const followerStream = `https://${domain}/users/${name}/followers`;
+    if (!Array.isArray(note.to)) {
+        note.cc = []
     }
     if (!Array.isArray(note.cc)) {
-        note.cc = [note.cc]
+        note.cc = []
     }
-    for (const mention of status.mentions) {
-        const { uri } = mention.user;
+    const mentions = status.mentions.map(e => {
+        const { uri } = e.user;
         if (uri.length !== 0) {
-            note.cc.push(uri)
+            return uri
         }
-        else {
-            note.cc.push(`https://${domain}/users/${mention.user.name}`);
-        }
-    }  
+        return `https://${domain}/users/${e.user.name}`;
+    })
+    switch(status.visibility) {
+        case Visibility.Public:
+            note.to = [publicStream, ...mentions];
+            note.cc = [followerStream]
+            break;
+        case Visibility.Unlisted:
+            note.to = [followerStream, ...mentions];
+            note.cc = [publicStream]
+            break;
+        case Visibility.FollowOnly:
+            note.to = [followerStream, ...mentions]
+            break;
+        case Visibility.MentionOnly:
+            note.to = mentions;
+            break;
+    }
     return note;
 }
