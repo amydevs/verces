@@ -8,6 +8,11 @@ type StatusSmall = Prisma.StatusGetPayload<{
                 replyingToStatus: true,
                 replyingToUser: true
             }
+        },
+        mentions: {
+            include: {
+                user: true
+            }
         }
     }
 }>
@@ -32,22 +37,24 @@ export const generateNote = (name: string, domain: string, status: StatusSmall):
             note.inReplyTo = status.replyingTo.replyingToStatus.url
         }
         else {
-            note.inReplyTo = `https://${domain}/users/${status.replyingTo.replyingToUserId}/statuses/${status.replyingTo.replyingToStatusId}`
-        }
-
-        if (note.cc) {
-            // push all mentions instead later
-            if (!Array.isArray(note.cc)) {
-                note.cc = [note.cc]
-            }
-            const { uri } = status.replyingTo.replyingToUser;
-            if (typeof uri === 'string') {
-                note.cc.push(uri)
-            }
-            else {
-                note.cc.push(`https://${domain}/users/${status.replyingTo.replyingToUserId}`);
-            }
-        }                
+            note.inReplyTo = `https://${domain}/users/${status.replyingTo.replyingToUser.name}/statuses/${status.replyingTo.replyingToStatusId}`
+        }             
     }
+    
+    if (!note.cc) {
+        note.cc = [`https://${domain}/users/${name}/followers`]
+    }
+    if (!Array.isArray(note.cc)) {
+        note.cc = [note.cc]
+    }
+    for (const mention of status.mentions) {
+        const { uri } = mention.user;
+        if (uri.length !== 0) {
+            note.cc.push(uri)
+        }
+        else {
+            note.cc.push(`https://${domain}/users/${mention.user.name}`);
+        }
+    }  
     return note;
 }
