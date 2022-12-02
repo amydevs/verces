@@ -69,7 +69,9 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             create: {
                 id: receiverNoteId,
                 text: receiverNote.content,
-                userId: receiverUser.id
+                userId: receiverUser.id,
+                uri: receiverNoteUrl,
+                url: receiverNoteUrl,
             }
         })
         const replyStatus = await prisma.status.create({
