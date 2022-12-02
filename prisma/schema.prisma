@@ -58,8 +58,8 @@ model User {
 
   host String @default("") // Empty if local instance to allow for unique check.
 
-  uri String  @default("")
-  url String?
+  uri String? @unique
+  url String? @unique
 
   keyPair KeyPair?
 
@@ -101,8 +101,8 @@ model Status {
 
   visibility Visibility @default(Public)
 
-  uri String  @default("") // The URI of a note. it will be empty when the note is local.
-  url String? // The human readable url of a note. it will be null when the note is local.
+  uri String? @unique // The URI of a note. it will be empty when the note is local.
+  url String? @unique // The human readable url of a note. it will be null when the note is local.
 }
 
 model Reply {

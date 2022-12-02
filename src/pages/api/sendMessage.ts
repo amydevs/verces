@@ -59,20 +59,19 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                     }
                 },
                 uri: receiverActorUrl,
-                url: receiverActorUrl
+                url: receiverActor.url
             }
         })
         const receiverStatus = await prisma.status.upsert({
             where: {
-                id: receiverNoteId
+                uri: receiverNoteUrl
             },
             update: {},
             create: {
-                id: receiverNoteId,
                 text: receiverNote.content,
                 userId: receiverUser.id,
                 uri: receiverNoteUrl,
-                url: receiverNoteUrl,
+                url: receiverNote.url,
             }
         })
         const replyStatus = await prisma.status.create({
