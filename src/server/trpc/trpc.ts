@@ -1,9 +1,10 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import { type OpenApiMeta } from "trpc-openapi";
 
 import { type Context } from "./context";
 
-const t = initTRPC.context<Context>().create({
+const t = initTRPC.meta<OpenApiMeta>().context<Context>().create({
   transformer: superjson,
   errorFormatter({ shape }) {
     return shape;
