@@ -29,6 +29,10 @@ const config = {
             value: '(?<a>.*application\\/activity\\+json.*)'
           }
         ]
+      },
+      {
+        source: '/@:path*',
+        destination: '/@/:path'
       }
     ]
   },
