@@ -110,7 +110,6 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             method: 'POST',
             body: message,
             headers: {
-                'Content-Type': activityContentType,
                 'Host': receiverHost,
                 'Date': date.toUTCString(),
                 'Digest': `SHA-256=${digestHash}`,
