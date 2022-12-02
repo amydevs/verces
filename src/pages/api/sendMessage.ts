@@ -1,6 +1,6 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateNoteWithReply } from "server/activitypub/note";
+import { generateNote } from "server/activitypub/streams/note";
 import { getServerAuthSession } from "server/common/get-server-auth-session";
 
 import { prisma } from "../../server/db/client";
@@ -78,11 +78,11 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             body: JSON.stringify({
                 "@context": "https://www.w3.org/ns/activitystreams",
             
-                "id": `https://${env.HOST}/users/${session.user.id}/statuses/${reply.id}`,
+                "id": `https://${env.HOST}/users/${session.user.id}/statuses/${reply.id}/activity`,
                 "type": "Create",
                 "actor": "https://${env.HOST}/users/${session.user.id}",
             
-                "object": generateNoteWithReply(session.user.id, env.HOST, reply)
+                "object": generateNote(session.user.id, env.HOST, reply)
             })
         }))
     }

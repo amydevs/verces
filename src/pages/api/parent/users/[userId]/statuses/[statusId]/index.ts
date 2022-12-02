@@ -1,6 +1,6 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateNoteWithReply } from "server/activitypub/streams/note";
+import { generateNote } from "server/activitypub/streams/note";
 import { prisma } from "server/db/client";
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -30,7 +30,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!foundStatus) {
         return res.status(404).send('Not Found')
     }
-    return generateNoteWithReply(userId, env.HOST, foundStatus);
+    return generateNote(userId, env.HOST, foundStatus);
 };
 
 export default status;

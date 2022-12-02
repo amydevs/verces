@@ -56,7 +56,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  host    String   @default("") // Null if local instance user.
+  host    String   @default("") // Empty if local instance to allow for unique check..
+  uri     String?
+
   keyPair KeyPair?
 
   statuses        Status[]
