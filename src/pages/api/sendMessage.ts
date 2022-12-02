@@ -45,13 +45,13 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             where: {
                 name_host: {
                     name: receiverActor.preferredUsername,
-                    host: "mastodon.social"
+                    host: receiverHost
                 }
             },
             update: {},
             create: {
                 name: receiverActor.preferredUsername,
-                host: "mastodon.social",
+                host: receiverHost,
                 keyPair: {
                     create: {
                         publicKey: receiverActor.publicKey.publicKeyPem
