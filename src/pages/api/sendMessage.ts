@@ -8,12 +8,13 @@ import crypto from 'crypto';
 import { prisma } from "../../server/db/client";
 
 const examples = async (req: NextApiRequest, res: NextApiResponse) => {
+    
     const session = await getServerAuthSession({ req, res });
     const activityContentType = 'application/activity+json';
 
-    const receiverHost = "mastodon.social";
-    const receiverName = "Gargron";
-    const receiverNoteId = "100254678717223630"
+    const receiverHost = req.query.host as string;
+    const receiverName = req.query.name as string;
+    const receiverNoteId = req.query.note as string;
 
     const inboxFragment = '/inbox'
     const inboxUrl = `https://${receiverHost}${inboxFragment}`;
