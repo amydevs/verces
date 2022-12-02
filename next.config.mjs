@@ -58,7 +58,7 @@ const config = {
     return [
       {       
         source: '/users/:user',
-        destination: '/:user',
+        destination: '/@/:user',
         has: [
           {
             type: 'header',
@@ -70,7 +70,7 @@ const config = {
       },
       {       
         source: '/users/:user/statuses/:status',
-        destination: '/:user/:status',
+        destination: '/@/:user/:status',
         has: [
           {
             type: 'header',
