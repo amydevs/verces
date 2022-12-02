@@ -12,7 +12,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
     const activityContentType = 'application/activity+json';
 
     const receiverHost = "mastodon.social";
-    const receiverName = "Gargon";
+    const receiverName = "Gargron";
     const receiverNoteId = "100254678717223630"
 
     const inboxFragment = '/inbox'
