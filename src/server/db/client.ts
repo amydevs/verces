@@ -10,10 +10,10 @@ declare global {
 export const prisma =
   global.prisma ||
   new PrismaClient({
-    log:
+      log:
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
 if (env.NODE_ENV !== "production") {
-  global.prisma = prisma;
+    global.prisma = prisma;
 }

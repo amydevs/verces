@@ -38,15 +38,15 @@ const Authorize: NextPage<AuthorizeProps> = (props) => {
         <>
             {
                 session.data?.user?.id ?
-                <button onClick={() => authorize.mutate(router.query as any)}>Authorize</button>
-                : (() => {
-                    const providers = []
-                    for (const key in props.providers) {
-                        const provider = props.providers[key]
-                        providers.push((<button key={key} onClick={() => signIn(provider?.id)}>Login with {provider?.name}</button>))
-                    }
-                    return providers;
-                })()
+                    <button onClick={() => authorize.mutate(router.query as any)}>Authorize</button>
+                    : (() => {
+                        const providers = []
+                        for (const key in props.providers) {
+                            const provider = props.providers[key]
+                            providers.push((<button key={key} onClick={() => signIn(provider?.id)}>Login with {provider?.name}</button>))
+                        }
+                        return providers;
+                    })()
             }
         </>
     );

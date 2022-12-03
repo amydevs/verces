@@ -16,13 +16,13 @@ export const v1Router = router({
             description: z.string()
         }))
         .query(() => {
-                return {
-                    domain: env.HOST,
-                    title: 'Verces',
-                    version,
-                    source_url: "https://github.com/mastodon/mastodon",
-                    description: "Serverless Activitypub"
-                }
-            }),
+            return {
+                domain: env.HOST,
+                title: 'Verces',
+                version,
+                source_url: "https://github.com/mastodon/mastodon",
+                description: "Serverless Activitypub"
+            }
+        }),
     apps: appsRouter
 });

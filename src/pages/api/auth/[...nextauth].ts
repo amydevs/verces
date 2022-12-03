@@ -9,52 +9,52 @@ import { prisma } from "../../../server/db/client";
 import { generateKeyPair } from "lib/signature";
 
 export const authOptions: NextAuthOptions = {
-  // Include user.id on session
-  callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-      }
-      return session;
-    }
-  },
-  events: {
-    async createUser({user}) {
-      const keys = await generateKeyPair();
-      await prisma.keyPair.upsert({
-        where: {
-          userId: user.id
-        },
-        update: {},
-        create: {
-          userId: user.id,
-          ...keys
+    // Include user.id on session
+    callbacks: {
+        session({ session, user }) {
+            if (session.user) {
+                session.user.id = user.id;
+            }
+            return session;
         }
-      });
     },
-  },
-  // Configure one or more authentication providers
-  adapter: PrismaAdapter(prisma),
-  providers: [
+    events: {
+        async createUser({user}) {
+            const keys = await generateKeyPair();
+            await prisma.keyPair.upsert({
+                where: {
+                    userId: user.id
+                },
+                update: {},
+                create: {
+                    userId: user.id,
+                    ...keys
+                }
+            });
+        },
+    },
+    // Configure one or more authentication providers
+    adapter: PrismaAdapter(prisma),
+    providers: [
     // DiscordProvider({
     //   clientId: env.DISCORD_CLIENT_ID,
     //   clientSecret: env.DISCORD_CLIENT_SECRET,
     // }),
-    Auth0Provider({
-      clientId: env.AUTH0_CLIENT_ID,
-      clientSecret: env.AUTH0_CLIENT_SECRET,
-      issuer: env.AUTH0_ISSUER,
-      profile(profile) {
-        return {
-          id: profile.sub,
-          name: profile.preferred_username || profile.nickname,
-          email: profile.email,
-          image: profile.picture,
-        }
-      },
-    })
+        Auth0Provider({
+            clientId: env.AUTH0_CLIENT_ID,
+            clientSecret: env.AUTH0_CLIENT_SECRET,
+            issuer: env.AUTH0_ISSUER,
+            profile(profile) {
+                return {
+                    id: profile.sub,
+                    name: profile.preferred_username || profile.nickname,
+                    email: profile.email,
+                    image: profile.picture,
+                }
+            },
+        })
     // ...add more providers here
-  ],
+    ],
 };
 
 export default NextAuth(authOptions);

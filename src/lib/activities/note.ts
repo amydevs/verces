@@ -60,20 +60,20 @@ export const generateNote = (name: string, status: StatusSmall, context = true):
         return getUserUri(e.user.name);
     })
     switch(status.visibility) {
-        case Visibility.Public:
-            note.to = [PublicStream, ...mentions];
-            note.cc = [followerStream]
-            break;
-        case Visibility.Unlisted:
-            note.to = [followerStream, ...mentions];
-            note.cc = [PublicStream]
-            break;
-        case Visibility.FollowOnly:
-            note.to = [followerStream, ...mentions]
-            break;
-        case Visibility.MentionOnly:
-            note.to = mentions;
-            break;
+    case Visibility.Public:
+        note.to = [PublicStream, ...mentions];
+        note.cc = [followerStream]
+        break;
+    case Visibility.Unlisted:
+        note.to = [followerStream, ...mentions];
+        note.cc = [PublicStream]
+        break;
+    case Visibility.FollowOnly:
+        note.to = [followerStream, ...mentions]
+        break;
+    case Visibility.MentionOnly:
+        note.to = mentions;
+        break;
     }
     return note;
 }
