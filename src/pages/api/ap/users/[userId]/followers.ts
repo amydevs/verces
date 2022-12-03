@@ -17,7 +17,7 @@ const followers = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const wherePublicFollows = {
         where: {
-            user: {
+            targetUser: {
                 name: userId
             },
             type: FollowType.Accepted
