@@ -10,6 +10,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   return createOpenApiNextHandler({
     router: appRouter,
     createContext,
+    responseMeta: (meta) => {
+      console.log(meta)
+      return {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      };
+    }
   })(req, res);
 };
 
