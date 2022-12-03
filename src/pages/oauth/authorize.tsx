@@ -14,15 +14,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const Authorize: NextPage = () => {
     const router = useRouter();
     const session = useSession();
-    const { client_id, redirect_uri, response_type, scope } = router.query;
-
-    if (session.data?.user?.id) {
-        
-    }
-    const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+    
+    const authorize = trpc.oauth.authorize.useMutation();
 
     return (
         <>
+            <button onClick={() => authorize.mutate(router.query as any)}></button>
         </>
     );
 };
