@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
 import { type IActor } from "lib/activities/type";
-import { getFollowersUri, getFollowingUri, getInboxUri, getOutboxUri, getUserUri } from "lib/uris";
+import { getFollowersUri, getFollowingUri, getInboxUri, getOutboxUri, getUserUri, getUserUrl } from "lib/uris";
 import { ActorContext } from "lib/activities/contexts";
 import { sendResError } from "lib/errors";
 
@@ -17,10 +17,14 @@ const generateActor = (name: string, pubKey: string): IActor => {
         "outbox": getOutboxUri(name),
         "followers": getFollowersUri(name),
         "following": getFollowingUri(name),
+        "url": getUserUrl(name),
         "publicKey": {
             "id": `${userUri}#main-key`,
             "owner": userUri,
             "publicKeyPem": pubKey
+        },
+        "endpoints": {
+            "sharedInbox": getInboxUri()
         }
     };
 };
