@@ -4,8 +4,11 @@ import { type IActor } from "lib/activities/type";
 import { getFollowersUri, getFollowingUri, getInboxUri, getOutboxUri, getUserUri, getUserUrl } from "lib/uris";
 import { ActorContext } from "lib/activities/contexts";
 import { sendResError } from "lib/errors";
+import type { Prisma } from "@prisma/client";
 
-const generateActor = (name: string, pubKey: string): IActor => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+const generateActor = (user: Prisma.UserGetPayload<{}>, privateKey: string): IActor => {
+    const { name, displayName } = user;
     const userUri = getUserUri(name);
     return {
         "@context": ActorContext,
@@ -13,6 +16,7 @@ const generateActor = (name: string, pubKey: string): IActor => {
         "id": userUri,
         "type": "Person",
         "preferredUsername": name,
+        ...(displayName ? { "name": displayName } : {}),
         "inbox": getInboxUri(name),
         "outbox": getOutboxUri(name),
         "followers": getFollowersUri(name),
@@ -21,7 +25,7 @@ const generateActor = (name: string, pubKey: string): IActor => {
         "publicKey": {
             "id": `${userUri}#main-key`,
             "owner": userUri,
-            "publicKeyPem": pubKey
+            "publicKeyPem": privateKey
         },
         "endpoints": {
             "sharedInbox": getInboxUri()
@@ -35,9 +39,8 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
         return sendResError(res, 400);
     }
     const foundUser = await prisma.user.findFirst({
-        select: {
+        include: {
             keyPair: true,
-            name: true
         },
         where: {
             name: id
@@ -47,7 +50,7 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
         return sendResError(res, 404);
     }
   
-    return res.status(200).json(generateActor(foundUser.name, foundUser.keyPair?.publicKey));
+    return res.status(200).json(generateActor(foundUser, foundUser.keyPair.privateKey));
 };
 
 export default user;
