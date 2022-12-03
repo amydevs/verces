@@ -6,7 +6,7 @@ import { zError } from "server/trpc/zod";
 
 export const appsRouter = router({
     create: publicProcedure
-        .meta({ openapi: { method: 'POST', path: '/v1/apps' } })
+        .meta({ openapi: { method: "POST", path: "/v1/apps" } })
         .input(z.object({
             client_name: z.string(),
             redirect_uris: z.string(),
@@ -39,6 +39,6 @@ export const appsRouter = router({
                 redirect_uri: input.redirect_uris,
                 client_id: application.clientId,
                 client_secret: application.clientSecret,
-            }
+            };
         })
 });

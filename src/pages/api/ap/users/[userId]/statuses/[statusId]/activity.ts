@@ -7,8 +7,8 @@ import { sendResError } from "lib/errors";
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, statusId } = req.query;
-    if (typeof userId !== 'string' || typeof statusId !== 'string') {
-        return sendResError(res, 400)
+    if (typeof userId !== "string" || typeof statusId !== "string") {
+        return sendResError(res, 400);
     }
     const foundStatus = await prisma.status.findFirst({
         include: {
@@ -23,7 +23,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
         }
     });
     if (!foundStatus) {
-        return sendResError(res, 404)
+        return sendResError(res, 404);
     }
     return res.json(generateCreate(foundStatus.user.name, env.HOST, generateNote(foundStatus.user.name, foundStatus, false)));
 };

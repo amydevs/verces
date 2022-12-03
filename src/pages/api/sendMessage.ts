@@ -4,22 +4,22 @@ import { generateCreate } from "lib/activities/create";
 import { generateNote, statusInclude } from "lib/activities/note";
 import { getServerAuthSession } from "server/common/get-server-auth-session";
 
-import crypto from 'crypto';
+import crypto from "crypto";
 import { prisma } from "../../server/db/client";
 
 const examples = async (req: NextApiRequest, res: NextApiResponse) => {
     
     const session = await getServerAuthSession({ req, res });
-    const activityContentType = 'application/activity+json';
+    const activityContentType = "application/activity+json";
 
     const receiverHost = req.query.host as string;
     const receiverName = req.query.name as string;
     const receiverNoteId = req.query.note as string;
 
-    const inboxFragment = '/inbox'
+    const inboxFragment = "/inbox";
     const inboxUrl = `https://${receiverHost}${inboxFragment}`;
-    const receiverActorUrl = `https://${receiverHost}/users/${receiverName}`
-    const receiverNoteUrl = `${receiverActorUrl}/statuses/${receiverNoteId}`
+    const receiverActorUrl = `https://${receiverHost}/users/${receiverName}`;
+    const receiverNoteUrl = `${receiverActorUrl}/statuses/${receiverNoteId}`;
 
     const user = await prisma.user.findFirst({
         include: {
@@ -36,12 +36,12 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             headers: {
                 Accept: activityContentType
             }
-        })).json()
+        })).json();
         const receiverNote = await (await fetch(receiverNoteUrl, {
             headers: {
                 Accept: activityContentType
             }
-        })).json()
+        })).json();
         const receiverUser = await prisma.user.upsert({
             where: {
                 name_host: {
@@ -61,7 +61,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                 uri: receiverActorUrl,
                 url: receiverActor.url
             }
-        })
+        });
         const receiverStatus = await prisma.status.upsert({
             where: {
                 uri: receiverNoteUrl
@@ -73,11 +73,11 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
                 uri: receiverNoteUrl,
                 url: receiverNote.url,
             }
-        })
+        });
         const replyStatus = await prisma.status.create({
             ...statusInclude,
             data: {
-                text: '<p>Hello world</p>',
+                text: "<p>Hello world</p>",
                 userId: user.id,
                 replyingTo: {
                     create: {
@@ -97,30 +97,30 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
         });
 
         const message = JSON.stringify(generateCreate(user.name, env.HOST, generateNote(user.name, replyStatus, false)));
-        const digestHash = crypto.createHash('sha256').update(message).digest('base64');
-        const signer = crypto.createSign('sha256');
+        const digestHash = crypto.createHash("sha256").update(message).digest("base64");
+        const signer = crypto.createSign("sha256");
         const date = new Date();
         const stringToSign = `(request-target): post ${inboxFragment}\nhost: ${receiverHost}\ndate: ${date.toUTCString()}\ndigest: SHA-256=${digestHash}`;
         signer.update(stringToSign);
         signer.end();
         const signature = signer.sign(user.keyPair?.privateKey);
-        const signature_b64 = signature.toString('base64');
+        const signature_b64 = signature.toString("base64");
         const header = `keyId="https://${env.HOST}/users/${user.name}",headers="(request-target) host date digest",signature="${signature_b64}"`;
         const resp = await fetch(inboxUrl, {
-            method: 'POST',
+            method: "POST",
             body: message,
             headers: {
-                'Host': receiverHost,
-                'Date': date.toUTCString(),
-                'Digest': `SHA-256=${digestHash}`,
-                'Signature': header
+                "Host": receiverHost,
+                "Date": date.toUTCString(),
+                "Digest": `SHA-256=${digestHash}`,
+                "Signature": header
             }
         });
-        console.log(resp)
+        console.log(resp);
         return res.send(`${resp.status}\n\n\n${await resp.text()}`);
     }
     
-    res.send('help')
+    res.send("help");
 };
 
 export default examples;

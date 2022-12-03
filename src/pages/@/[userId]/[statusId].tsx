@@ -6,6 +6,6 @@ const StatusPage: NextPage = () => {
     const username = router.query.userId as string;
     return (
         <>{username}</>
-    )
-}
+    );
+};
 export default StatusPage;

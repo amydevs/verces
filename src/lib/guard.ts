@@ -8,11 +8,11 @@ export function streamsGuard<T>(
         req: NextApiRequest,
         res: NextApiResponse
     ) => {
-        const headerSignature = req.headers.signature
+        const headerSignature = req.headers.signature;
         if (!headerSignature) {
             return sendResError(res, 400, "Invalid Signature");
         }
 
-        return handle(req, res)
-    }
+        return handle(req, res);
+    };
 }

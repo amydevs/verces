@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
                     name: profile.preferred_username || profile.nickname,
                     email: profile.email,
                     image: profile.picture,
-                }
+                };
             },
         })
     // ...add more providers here

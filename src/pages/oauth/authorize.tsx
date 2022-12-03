@@ -17,21 +17,21 @@ export const getServerSideProps: GetServerSideProps<AuthorizeProps> = async (con
             query: context.query,
             providers
         }
-    }
-}
+    };
+};
 const Authorize: NextPage<AuthorizeProps> = (props) => {
     const router = useRouter();
     const session = useSession();
 
     const authorize = trpc.oauth.authorize.useMutation({
         onSuccess: ({ code }) => {
-            router.push(`${props.query.redirect_uri}?code=${code}`)
+            router.push(`${props.query.redirect_uri}?code=${code}`);
         }
     });
     
-    const providers = []
+    const providers = [];
     for (const key in props.providers) {
-        providers.push(props.providers[key])
+        providers.push(props.providers[key]);
     }
 
     return (
@@ -40,10 +40,10 @@ const Authorize: NextPage<AuthorizeProps> = (props) => {
                 session.data?.user?.id ?
                     <button onClick={() => authorize.mutate(router.query as any)}>Authorize</button>
                     : (() => {
-                        const providers = []
+                        const providers = [];
                         for (const key in props.providers) {
-                            const provider = props.providers[key]
-                            providers.push((<button key={key} onClick={() => signIn(provider?.id)}>Login with {provider?.name}</button>))
+                            const provider = props.providers[key];
+                            providers.push((<button key={key} onClick={() => signIn(provider?.id)}>Login with {provider?.name}</button>));
                         }
                         return providers;
                     })()

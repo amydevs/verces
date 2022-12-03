@@ -6,15 +6,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
             query: context.query
         }
-    }
-}
+    };
+};
 
 const UserPage: NextPage = () => {
     const router = useRouter();
     const usernameAndHost = router.query.userId as string;
-    const [username, host] = usernameAndHost.split('@', 1) as [string, string | undefined];
+    const [username, host] = usernameAndHost.split("@", 1) as [string, string | undefined];
     return (
         <>{username} {host}</>
-    )
-}
+    );
+};
 export default UserPage;

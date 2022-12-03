@@ -1,12 +1,12 @@
 import { env } from "env/server.mjs";
 import { router, publicProcedure, protectedProcedure } from "../../trpc";
-import { version } from '../../../../../package.json'
+import { version } from "../../../../../package.json";
 import { z } from "zod";
 import { appsRouter } from "./apps";
 
 export const v1Router = router({
     instance: publicProcedure
-        .meta({ openapi: { method: 'GET', path: '/v1/instance' } })
+        .meta({ openapi: { method: "GET", path: "/v1/instance" } })
         .input(z.void())
         .output(z.object({
             domain: z.string(),
@@ -18,11 +18,11 @@ export const v1Router = router({
         .query(() => {
             return {
                 domain: env.HOST,
-                title: 'Verces',
+                title: "Verces",
                 version,
                 source_url: "https://github.com/mastodon/mastodon",
                 description: "Serverless Activitypub"
-            }
+            };
         }),
     apps: appsRouter
 });

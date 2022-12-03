@@ -21,12 +21,12 @@ export const oauthRouter = router({
                         array_contains: input.redirect_uri
                     }
                 }
-            })
+            });
             if (!client) {
                 throw {
                     error: "Redirect Not Found",
                     description: "Redirect Not Found"
-                } as typeof zError._type
+                } as typeof zError._type;
             }
             const grant = await ctx.prisma.oauthAccessGrant.create({
                 data: {
@@ -45,10 +45,10 @@ export const oauthRouter = router({
                     expiresAt,
                     token: await generateSecret()              
                 }
-            })
+            });
             return {
                 code: grant.token
-            }
+            };
         }),
     // token: publicProcedure
     //     .input(z.object({
@@ -84,4 +84,4 @@ export const oauthRouter = router({
     //             access_token: 
     //         }
     //     })
-})
+});

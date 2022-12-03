@@ -8,27 +8,27 @@ import { sendResError } from "lib/errors";
 const generateActor = (name: string, pubKey: string): IActor => {
     const userUri = getUserUri(name);
     return {
-        '@context': ActorContext,
+        "@context": ActorContext,
 
-        'id': userUri,
-        'type': 'Person',
-        'preferredUsername': name,
-        'inbox': getInboxUri(name),
-        'outbox': getOutboxUri(name),
-        'followers': getFollowersUri(name),
-        'following': getFollowingUri(name),
-        'publicKey': {
-            'id': `${userUri}#main-key`,
-            'owner': userUri,
-            'publicKeyPem': pubKey
+        "id": userUri,
+        "type": "Person",
+        "preferredUsername": name,
+        "inbox": getInboxUri(name),
+        "outbox": getOutboxUri(name),
+        "followers": getFollowersUri(name),
+        "following": getFollowingUri(name),
+        "publicKey": {
+            "id": `${userUri}#main-key`,
+            "owner": userUri,
+            "publicKeyPem": pubKey
         }
     };
-}
+};
 
 const user = async (req: NextApiRequest, res: NextApiResponse) => {
     const id = req.query.userId;
-    if (typeof id !== 'string') {
-        return sendResError(res, 400)
+    if (typeof id !== "string") {
+        return sendResError(res, 400);
     }
     const foundUser = await prisma.user.findFirst({
         select: {
@@ -40,7 +40,7 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
         }
     });
     if (!foundUser?.keyPair?.publicKey || !foundUser?.name) {
-        return sendResError(res, 404)
+        return sendResError(res, 404);
     }
   
     return res.status(200).json(generateActor(foundUser.name, foundUser.keyPair?.publicKey));

@@ -13,8 +13,8 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, page, min_id, max_id } = req.query;
     const objPerPage = 20;
 
-    if (typeof userId !== 'string') {
-        return sendResError(res, 400)
+    if (typeof userId !== "string") {
+        return sendResError(res, 400);
     }
     const foundUser = await prisma.user.findFirst({
         select: {
@@ -27,24 +27,24 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
         }
     });
     if (!foundUser?.keyPair?.publicKey || !foundUser?.name) {
-        return sendResError(res, 404)
+        return sendResError(res, 404);
     }
 
     const outboxUrl = getOutboxUri(foundUser.name);
     const publicVisibilities = [
         Visibility.Public,
         Visibility.Unlisted
-    ]
+    ];
 
-    if (typeof page === 'string' && page.toLowerCase() === 'true' ) {
+    if (typeof page === "string" && page.toLowerCase() === "true" ) {
         
         let page_options = Prisma.validator<Prisma.StatusFindManyArgs>()({});
         
-        if (typeof min_id === 'string') {
-            if (min_id === '0') {   
+        if (typeof min_id === "string") {
+            if (min_id === "0") {   
                 page_options = {
                     orderBy: {
-                        createdAt: 'asc'
+                        createdAt: "asc"
                     },
                 } satisfies Prisma.StatusFindManyArgs;
             }
@@ -57,7 +57,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
                 } satisfies Prisma.StatusFindManyArgs;
             }
         }
-        else if (typeof max_id === 'string') {
+        else if (typeof max_id === "string") {
             page_options = {
                 cursor: {
                     id: max_id
@@ -76,28 +76,28 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
                 }
             },
             orderBy: {
-                createdAt: 'desc'
+                createdAt: "desc"
             },
             take: objPerPage,
             ...statusInclude,
             ...page_options
-        })
-        if (min_id === '0') {
+        });
+        if (min_id === "0") {
             // the array is reversed when getting the last page of posts... so let's reverse it back!
-            statuses.reverse()
+            statuses.reverse();
         }
         if (statuses.length > objPerPage) {
             // this will happen when using min_id
-            statuses.length = objPerPage
+            statuses.length = objPerPage;
         }
         
-        const creates = statuses.map(e => generateCreate(foundUser.name, env.HOST, generateNote(foundUser.name, e)))
+        const creates = statuses.map(e => generateCreate(foundUser.name, env.HOST, generateNote(foundUser.name, e)));
         const outbox: IOrderedCollectionPage = {
             "@context": StatusContext,
-            type: 'OrderedCollectionPage',
+            type: "OrderedCollectionPage",
             orderedItems: creates,
             partOf: outboxUrl,
-        }
+        };
         if (creates.length !== 0) {
             outbox.next = `${outboxUrl}?page=true&max_id=${statuses[statuses.length - 1]?.id || 0}`;
             outbox.prev = `${outboxUrl}?page=true&min_id=${statuses[0]?.id || 0}`;
@@ -115,7 +115,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
                     in: publicVisibilities
                 }
             }
-        })
+        });
         return res.json({
             "@context": ActivityStreamsContext,
             "type": "OrderedCollection",

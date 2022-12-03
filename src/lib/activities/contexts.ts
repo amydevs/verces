@@ -1,4 +1,4 @@
-export const ActivityStreamsContext = 'https://www.w3.org/ns/activitystreams';
+export const ActivityStreamsContext = "https://www.w3.org/ns/activitystreams";
 
 export const ActorContext = [
     "https://www.w3.org/ns/activitystreams",
@@ -59,7 +59,7 @@ export const ActorContext = [
             "@id": "toot:focalPoint"
         }
     }
-]
+];
 
 export const StatusContext = [
     "https://www.w3.org/ns/activitystreams",
@@ -72,4 +72,4 @@ export const StatusContext = [
         "toot": "http://joinmastodon.org/ns#",
         "votersCount": "toot:votersCount"
     }
-]
+];
