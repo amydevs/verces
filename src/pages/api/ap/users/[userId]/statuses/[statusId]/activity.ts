@@ -1,7 +1,7 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateCreate } from "server/activitypub/streams/create";
-import { generateNote, statusInclude } from "server/activitypub/streams/note";
+import { generateCreate } from "lib/activities/create";
+import { generateNote, statusInclude } from "lib/activities/note";
 import { prisma } from "server/db/client";
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -24,7 +24,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!foundStatus) {
         return res.status(404).send('Not Found')
     }
-    return res.json(generateCreate(foundStatus.user.name, env.HOST, generateNote(foundStatus.user.name, env.HOST, foundStatus)));
+    return res.json(generateCreate(foundStatus.user.name, env.HOST, generateNote(foundStatus.user.name, env.HOST, foundStatus, false)));
 };
 
 export default status;

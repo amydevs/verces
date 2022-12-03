@@ -20,7 +20,7 @@ export const statusInclude = {
 
 type StatusSmall = Prisma.StatusGetPayload<typeof statusInclude>
 
-export const generateNote = (name: string, domain: string, status: StatusSmall, context: true): IPost => {
+export const generateNote = (name: string, domain: string, status: StatusSmall, context = true): IPost => {
     const note: IPost = {
         'id': `https://${domain}/users/${name}/statuses/${status.id}`,
         'type': 'Note',
