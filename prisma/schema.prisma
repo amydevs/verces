@@ -200,4 +200,13 @@ model Follow {
 
   targetUserId String
   targetUser User @relation("FollowTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  type FollowType
+}
+
+enum FollowType {
+  Requested
+  Accepted
+  Undo
+  Rejected
 }
