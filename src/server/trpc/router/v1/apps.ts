@@ -25,7 +25,6 @@ export const appsRouter = router({
         .mutation(async ({input}) => {            
             const application = await prisma.oauthApplication.create({
                 data: {
-                    id: "sdsd",
                     name: input.client_name,
                     scopes: input.scopes?.split(" "),
                     redirectUris: [input.redirect_uris],

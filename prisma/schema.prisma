@@ -21,9 +21,9 @@ model Example {
 }
 
 model OauthApplication {
-  id           String             @default(cuid()) @id
+  id           String             @default(dbgenerated()) @id
   name         String
-  clientId     String             @unique @default(cuid())
+  clientId     String             @unique @default(dbgenerated())
   clientSecret String
   redirectUris Json               @default("[]")
   scopes       Json               @default("[]")
