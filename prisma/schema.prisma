@@ -20,6 +20,57 @@ model Example {
   updatedAt DateTime @updatedAt
 }
 
+model OauthApplication {
+  id           String             @default(dbgenerated()) @id
+  name         String
+  clientId     String             @unique @default(dbgenerated())
+  clientSecret String
+  redirectUris Json               @default("[]")
+  scopes       Json               @default("[]")
+  createdAt    DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime           @default(now()) @updatedAt @db.Timestamptz(6)
+  grants       Json               @default("[]")
+  accessTokens OauthAccessToken[]
+  accessGrants OauthAccessGrant[]
+}
+
+model OauthAccessToken {
+  id                    String           @default(dbgenerated()) @id
+  userId                String
+  applicationId         String
+  token                 String           @unique
+  refreshToken          String?          @unique
+  tokenExpiresAt        DateTime?        @db.Timestamptz(6)
+  refreshTokenExpiresAt DateTime?        @db.Timestamptz(6)
+  scopes                Json             @default("[]")
+  createdAt             DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
+  application           OauthApplication @relation(fields: [applicationId], references: [id])
+  user                  User             @relation(fields: [userId], references: [id])
+
+  @@index([applicationId])
+  @@index([userId])
+}
+
+model OauthAccessGrant {
+  id            String           @default(dbgenerated()) @id
+  userId        String
+  applicationId String
+  token         String           @unique
+  expiresAt     DateTime         @db.Timestamptz(6)
+  redirectUri   String
+  codeChallengeMethod String?
+  codeChallenge String?
+  scopes        Json             @default("[]")
+  createdAt     DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
+  application   OauthApplication @relation(fields: [applicationId], references: [id])
+  user          User             @relation(fields: [userId], references: [id])
+
+  @@index([applicationId])
+  @@index([userId])
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -55,6 +106,9 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  
+  accessTokens      OauthAccessToken[]
+  accessGrants      OauthAccessGrant[]
 
   host String @default("") // Empty if local instance to allow for unique check.
 
