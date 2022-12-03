@@ -110,8 +110,9 @@ model User {
   accessTokens      OauthAccessToken[]
   accessGrants      OauthAccessGrant[]
 
-  host String @default("") // Empty if local instance to allow for unique check.
+  displayName String?
 
+  host String @default("") // Empty if local instance to allow for unique check.
   uri String? @unique // Unique on nullable fields don't error when the repetitive value is Null.
   url String? @unique
 
