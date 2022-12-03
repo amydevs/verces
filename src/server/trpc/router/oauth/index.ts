@@ -1,4 +1,3 @@
-import { env } from "env/server.mjs";
 import { router, publicProcedure, protectedProcedure } from "../../trpc";
 import { z } from "zod";
 import { generateSecret } from "../utils";
@@ -51,5 +50,38 @@ export const oauthRouter = router({
                 code: grant.token
             }
         }),
-        token:
+        // token: publicProcedure
+        //     .input(z.object({
+        //         grant_type: z.enum(['client_credentials', 'authorization_code']),
+        //         code: z.string().optional(),
+        //         client_id: z.string(),
+        //         redirect_uri: z.string(),
+        //         scope: z.string().optional()
+        //     }))
+        //     .output(z.object({
+        //         access_token: z.string(),
+        //         token_type: z.string(),
+        //         scope: z.string(),
+        //         created_at: z.string()
+        //     }).or(zError))
+        //     .mutation(async ({ctx, input}) => {
+        //         ctx.prisma.oauthAccessToken.create({
+        //             data: {
+        //                 token: await generateSecret(),
+        //                 application: {
+        //                     connect: {
+        //                         clientId: input.client_id
+        //                     },
+        //                 },
+        //                 user: {
+        //                     connect: {
+        //                         id
+        //                     }
+        //                 }
+        //             }
+        //         })
+        //         return {
+        //             access_token: 
+        //         }
+        //     })
 })
