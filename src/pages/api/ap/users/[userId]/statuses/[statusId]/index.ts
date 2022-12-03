@@ -1,4 +1,3 @@
-import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { generateNote, statusInclude } from "lib/activities/note";
 import { prisma } from "server/db/client";

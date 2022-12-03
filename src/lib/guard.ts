@@ -1,4 +1,4 @@
-import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { sendResError } from "./errors";
 
 export function streamsGuard<T>(

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type obj = { [x: string]: any };
 export type ApObject = IObject | string | (IObject | string)[];
 

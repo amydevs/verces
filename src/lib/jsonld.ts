@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CONTEXTS } from './contexts';
 import * as jsonld from 'jsonld';
 import { ActivityStreamsContext } from './activities/contexts';
