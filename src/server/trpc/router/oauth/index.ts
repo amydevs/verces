@@ -10,7 +10,7 @@ export const oauthRouter = router({
             client_id: z.string(),
             redirect_uri: z.string(),
             response_type: z.string(),
-            scope: z.string()
+            scope: z.string().optional()
         }))
         .mutation(async ({ctx, input}) => {
             const expiresAt = new Date();
@@ -42,7 +42,7 @@ export const oauthRouter = router({
                             id: ctx.session.user.id
                         }
                     },
-                    scopes: input.scope.split(" "),
+                    scopes: input.scope?.split(" "),
                     expiresAt,
                     token: await generateSecret()              
                 }
@@ -50,5 +50,6 @@ export const oauthRouter = router({
             return {
                 code: grant.token
             }
-        })
+        }),
+        token:
 })
