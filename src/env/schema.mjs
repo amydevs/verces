@@ -27,6 +27,7 @@ export const serverSchema = z.object({
 
   // ActivityPub
   HOST: z.string(),
+  PROTOCOL: z.string().default("https://")
 });
 
 /**

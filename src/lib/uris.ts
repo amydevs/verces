@@ -1,7 +1,7 @@
 import { env } from "env/server.mjs"
 
 const defaultParams = {
-    protocol: "https://",
+    protocol: env.PROTOCOL,
     host: env.HOST,
 }
 
