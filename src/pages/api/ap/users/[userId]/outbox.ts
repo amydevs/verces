@@ -26,24 +26,14 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!foundUser?.keyPair?.publicKey || !foundUser?.name) {
         return res.status(404).send('Not Found')
     }
-    
-    const whereVisibility = {
-        where: {
-            user: {
-                id: foundUser.id,
-            },
-            visibility: {
-                in: [
-                    Visibility.Public,
-                    Visibility.Unlisted
-                ]
-            }
-        }
-    }
 
     const actorUrl = `https://${env.HOST}/users/${foundUser.name}`;
     const outboxUrl = `${actorUrl}/outbox`
     const streamsContextUrl = "https://www.w3.org/ns/activitystreams";
+    const publicVisibilities = [
+        Visibility.Public,
+        Visibility.Unlisted
+    ]
 
     if (typeof page === 'string' && page.toLowerCase() === 'true' ) {
         
@@ -80,6 +70,9 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
                 user: {
                     id: foundUser.id,
                 },
+                visibility: {
+                    in: publicVisibilities
+                }
             },
             orderBy: {
                 createdAt: 'desc'
@@ -118,7 +111,9 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
                 user: {
                     id: foundUser.id,
                 },
-                ...whereVisibility.where.visibility
+                visibility: {
+                    in: publicVisibilities
+                }
             }
         })
         return res.json({
