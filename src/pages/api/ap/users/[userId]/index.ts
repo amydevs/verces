@@ -1,6 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
-import { type IActor } from "server/activitypub/type";
+import { type IActor } from "lib/activities/type";
 import { getFollowersUri, getFollowingUri, getInboxUri, getOutboxUri, getUserUri } from "lib/uris";
 import { ActorContext } from "lib/activities/contexts";
 

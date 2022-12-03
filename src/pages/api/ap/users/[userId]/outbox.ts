@@ -1,6 +1,6 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
-import { type IOrderedCollectionPage } from "server/activitypub/type";
+import { type IOrderedCollectionPage } from "lib/activities/type";
 import { Prisma, Visibility } from "@prisma/client";
 import { env } from "env/server.mjs";
 import { generateCreate } from "lib/activities/create";
