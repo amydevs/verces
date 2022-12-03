@@ -28,7 +28,6 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(404).send('Not Found')
     }
 
-    const actorUrl = getUserUri(foundUser.name);
     const outboxUrl = getOutboxUri(foundUser.name);
     const streamsContextUrl = "https://www.w3.org/ns/activitystreams";
     const publicVisibilities = [
@@ -97,7 +96,6 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             type: 'OrderedCollectionPage',
             orderedItems: creates,
             partOf: outboxUrl,
-            attributedTo: actorUrl
         }
         if (creates.length !== 0) {
             outbox.next = `${outboxUrl}?page=true&max_id=${statuses[statuses.length - 1]?.id || 0}`;
@@ -123,7 +121,6 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             "totalItems": count,
             "first": `${outboxUrl}?page=true`,
             "last": `${outboxUrl}?page=true&min_id=0`,
-            "attributedTo": actorUrl
         });
     }
 };
