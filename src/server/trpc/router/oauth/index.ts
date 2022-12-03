@@ -1,19 +1,39 @@
 import { env } from "env/server.mjs";
 import { router, publicProcedure, protectedProcedure } from "../../trpc";
-import { version } from '../../../../../package.json'
 import { z } from "zod";
+import { generateSecret } from "../utils";
 
 export const oauthRouter = router({
-    authorize: publicProcedure
+    authorize: protectedProcedure
         .input(z.object({
             client_id: z.string(),
             redirect_uri: z.string(),
             response_type: z.string(),
             scope: z.string()
         }))
-        .mutation(() => {
+        .mutation(async ({ctx, input}) => {
+            const expiresAt = new Date();
+            expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+            const grant = await ctx.prisma.oauthAccessGrant.create({
+                data: {
+                    application: {
+                        connect: {
+                            clientId: input.client_id
+                        }
+                    },
+                    redirectUri: input.redirect_uri,
+                    user: {
+                        connect: {
+                            id: ctx.session.user.id
+                        }
+                    },
+                    scopes: input.scope.split(" "),
+                    expiresAt,
+                    token: await generateSecret()              
+                }
+            })
             return {
-                code: ""
+                code: grant.token
             }
         })
 })
