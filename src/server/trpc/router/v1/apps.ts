@@ -2,6 +2,7 @@ import { publicProcedure, router } from "server/trpc/trpc";
 import { z } from "zod";
 import { prisma } from "server/db/client";
 import { generateSecret } from "../utils";
+import { zError } from "server/trpc/zod";
 
 export const appsRouter = router({
     create: publicProcedure
@@ -20,7 +21,7 @@ export const appsRouter = router({
             client_id: z.string(),
             client_secret: z.string(),
             vapid_key: z.string().optional()
-        }).or(z.object({ error: z.string() })))
+        }).or(zError))
         .mutation(async ({input}) => {            
             const application = await prisma.oauthApplication.create({
                 data: {

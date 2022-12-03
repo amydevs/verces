@@ -2,6 +2,7 @@ import { env } from "env/server.mjs";
 import { router, publicProcedure, protectedProcedure } from "../../trpc";
 import { z } from "zod";
 import { generateSecret } from "../utils";
+import { zError } from "server/trpc/zod";
 
 export const oauthRouter = router({
     authorize: protectedProcedure
@@ -14,6 +15,20 @@ export const oauthRouter = router({
         .mutation(async ({ctx, input}) => {
             const expiresAt = new Date();
             expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+            const client = await ctx.prisma.oauthApplication.findFirst({
+                where: {
+                    clientId: input.client_id,
+                    redirectUris: {
+                        array_contains: input.redirect_uri
+                    }
+                }
+            })
+            if (!client) {
+                throw {
+                    error: "Redirect Not Found",
+                    description: "Redirect Not Found"
+                } as typeof zError._type
+            }
             const grant = await ctx.prisma.oauthAccessGrant.create({
                 data: {
                     application: {

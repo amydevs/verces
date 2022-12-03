@@ -23,7 +23,11 @@ const Authorize: NextPage<AuthorizeProps> = (props) => {
     const router = useRouter();
     const session = useSession();
 
-    const authorize = trpc.oauth.authorize.useMutation();
+    const authorize = trpc.oauth.authorize.useMutation({
+        onSuccess: ({ code }) => {
+            router.push(`${props.query.redirect_uri}?code=${code}`)
+        }
+    });
     
     const providers = []
     for (const key in props.providers) {
