@@ -5,6 +5,7 @@ import { Prisma, Visibility } from "@prisma/client";
 import { env } from "env/server.mjs";
 import { generateCreate } from "server/activitypub/streams/create";
 import { generateNote, statusInclude } from "server/activitypub/streams/note";
+import { getOutboxUri, getUserUri } from "lib/uris";
 
 const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, page, min_id, max_id } = req.query;
@@ -27,8 +28,8 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(404).send('Not Found')
     }
 
-    const actorUrl = `https://${env.HOST}/users/${foundUser.name}`;
-    const outboxUrl = `${actorUrl}/outbox`
+    const actorUrl = getUserUri(foundUser.name);
+    const outboxUrl = getOutboxUri(foundUser.name);
     const streamsContextUrl = "https://www.w3.org/ns/activitystreams";
     const publicVisibilities = [
         Visibility.Public,
