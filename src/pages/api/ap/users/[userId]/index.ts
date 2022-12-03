@@ -46,7 +46,7 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(404).send('Not Found')
   }
   
-  return res.status(200).json(generateActor(foundUser.name, env.HOST,foundUser.keyPair?.publicKey));
+  return res.status(200).json(generateActor(env.HOST,foundUser.keyPair?.publicKey));
 };
 
 export default user;
