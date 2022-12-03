@@ -7,13 +7,14 @@ import { generateCreate } from "lib/activities/create";
 import { generateNote, statusInclude } from "lib/activities/note";
 import { getOutboxUri } from "lib/uris";
 import { ActivityStreamsContext, StatusContext } from "lib/activities/contexts";
+import { sendResError } from "lib/errors";
 
 const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, page, min_id, max_id } = req.query;
     const objPerPage = 20;
 
     if (typeof userId !== 'string') {
-        return res.status(400).send('Bad Request')
+        return sendResError(res, 400)
     }
     const foundUser = await prisma.user.findFirst({
         select: {
@@ -26,7 +27,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
         }
     });
     if (!foundUser?.keyPair?.publicKey || !foundUser?.name) {
-        return res.status(404).send('Not Found')
+        return sendResError(res, 404)
     }
 
     const outboxUrl = getOutboxUri(foundUser.name);

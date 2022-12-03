@@ -1,6 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "../../../../server/db/client";
 import { env } from "../../../../env/server.mjs";
+import { sendResError } from '../../../../lib/errors';
 
 const generateWebfinger = (name: string, domain: string) => {
     return {
@@ -19,7 +20,7 @@ const generateWebfinger = (name: string, domain: string) => {
 const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
     let reference = req.query.resource;
     if (typeof reference !== 'string') {
-        return res.status(400).send('Bad Response')
+        return sendResError(res, 400)
     }
 
     const acct = 'acct:';
@@ -28,12 +29,12 @@ const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     const [username, host] = reference.split("@", 1);
     if (host !== env.HOST) {
-        return res.status(404).send('Not Found')
+        return sendResError(res, 404)
     }
 
     const foundWebFinger = await prisma.user.findFirst({ where: { name: username, host: "" } });
     if (!foundWebFinger) {
-        return res.status(404).send('Not Found')
+        return sendResError(res, 404)
     }
 
     return res.status(200).json(generateWebfinger(reference, env.HOST));
