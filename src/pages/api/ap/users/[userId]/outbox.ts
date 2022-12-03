@@ -1,13 +1,13 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
-import { type ApObject, type IOrderedCollection } from "server/activitypub/type";
-import { Visibility } from "@prisma/client";
+import { IOrderedCollectionPage, type ApObject, type IOrderedCollection } from "server/activitypub/type";
+import { Prisma, Visibility } from "@prisma/client";
 import { env } from "env/server.mjs";
 import { generateCreate } from "server/activitypub/streams/create";
 import { generateNote, statusInclude } from "server/activitypub/streams/note";
 
 const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { userId, page, min_id } = req.query;
+    const { userId, page, min_id, max_id } = req.query;
     const objPerPage = 20;
 
     if (typeof userId !== 'string') {
@@ -41,56 +41,78 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
         }
     }
 
-    const outboxUrl = `https://${env.HOST}/users/${foundUser.name}/outbox`
+    const actorUrl = `https://${env.HOST}/users/${foundUser.name}`;
+    const outboxUrl = `${actorUrl}/outbox`
     const streamsContextUrl = "https://www.w3.org/ns/activitystreams";
 
-    const count = await prisma.status.count({
-        where: {
-            user: {
-                id: foundUser.id,
-            },
-            ...whereVisibility.where.visibility
-        }
-    })
-    const outboxBase = {
-        "@context": streamsContextUrl,
-        "type": "OrderedCollection",
-        "totalItems": count,
-    }
-
     if (typeof page === 'string' && page.toLowerCase() === 'true' ) {
+        
+        let page_options = Prisma.validator<Prisma.StatusFindManyArgs>()({});
+          
+        if (typeof min_id === 'string') {
+            // implement last page later
+            page_options = {
+                cursor: {
+                    id: min_id
+                },
+                take: -1 -objPerPage,
+            }
+        }
+        else if (typeof max_id === 'string') {
+            page_options = {
+                cursor: {
+                    id: max_id
+                },
+                skip: 1,
+                take: objPerPage
+            }
+        }
+        else {
+            page_options = {
+                take: objPerPage
+            }
+        }
         const statuses = await prisma.status.findMany({
             ...statusInclude,
             where: {
                 user: {
                     id: foundUser.id,
                 },
-                ...whereVisibility.where.visibility,
             },
-            take: objPerPage + 1,
-            ...(typeof min_id === 'string' ? 
-                {
-                    cursor: {
-                        id: min_id
-                    }
-                } : {}
-            )
+            ...page_options
         })
-        const lastStatus = statuses[objPerPage+1] ? statuses.pop() : undefined;
-        const creates = statuses.map(e => generateCreate(foundUser.name, env.HOST, generateNote(foundUser.name, env.HOST, e)))
-        const outbox: { orderedItems: ApObject } = {
-            ...outboxBase,
-            orderedItems: creates,
-            "next": `${outboxUrl}?page=true&min_id=${lastStatus?.id || 0}`
+        if (statuses.length > objPerPage) {
+            statuses.length = objPerPage
         }
+        
+        const creates = statuses.map(e => generateCreate(foundUser.name, env.HOST, generateNote(foundUser.name, env.HOST, e)))
+        const outbox: IOrderedCollectionPage = {
+            "@context": streamsContextUrl,
+            type: 'OrderedCollectionPage',
+            orderedItems: creates,
+            next: `${outboxUrl}?page=true&max_id=${statuses[statuses.length - 1]?.id || 0}`,
+            prev: `${outboxUrl}?page=true&min_id=${statuses[0]?.id || 0}`,
+            attributedTo: actorUrl
+        }
+        return res.json(outbox);
     }
     else {
-        const outbox = {
-            ...outboxBase,
+        const count = await prisma.status.count({
+            where: {
+                user: {
+                    id: foundUser.id,
+                },
+                ...whereVisibility.where.visibility
+            }
+        })
+        return res.json({
+            "@context": streamsContextUrl,
+            "type": "OrderedCollection",
+            "totalItems": count,
             "first": `${outboxUrl}?page=true`,
-            "last": `${outboxUrl}?page=true`
-        }
-        return res.send(outbox);
+            "last": `${outboxUrl}?page=true`,
+            "attributedTo": actorUrl
+        });
     }
 };
 

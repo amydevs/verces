@@ -99,6 +99,13 @@ export interface IOrderedCollection extends IObject {
 	orderedItems: ApObject;
 }
 
+export interface IOrderedCollectionPage extends IObject {
+	type: 'OrderedCollectionPage';
+	orderedItems: ApObject;
+	next: ApObject;
+	prev: ApObject;
+}
+
 export const validPost = ['Note', 'Question', 'Article', 'Audio', 'Document', 'Image', 'Page', 'Video', 'Event'];
 
 export const isPost = (object: IObject): object is IPost =>
