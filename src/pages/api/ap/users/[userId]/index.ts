@@ -1,8 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
-import { env } from "env/server.mjs";
 import { type IActor } from "server/activitypub/type";
-import { getFollowersUri, getInboxUri, getOutboxUri, getUserUri } from "lib/uris";
+import { getFollowersUri, getFollowingUri, getInboxUri, getOutboxUri, getUserUri } from "lib/uris";
 
 const generateActor = (name: string, pubKey: string): IActor => {
   const userUri = getUserUri(name);
@@ -19,7 +18,7 @@ const generateActor = (name: string, pubKey: string): IActor => {
     'inbox': getInboxUri(name),
     'outbox': getOutboxUri(name),
     'followers': getFollowersUri(name),
-
+    'following': getFollowingUri(name),
     'publicKey': {
       'id': `${userUri}#main-key`,
       'owner': userUri,
