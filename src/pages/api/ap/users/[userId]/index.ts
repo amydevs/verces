@@ -5,12 +5,10 @@ import { getFollowersUri, getFollowingUri, getInboxUri, getOutboxUri, getUserUri
 import { ActorContext } from "lib/activities/contexts";
 
 const generateActor = (name: string, pubKey: string): IActor => {
-  const userUri = getUserUri(name);
   return {
     '@context': ActorContext,
 
-    'id': userUri,
-    'attributedTo': userUri,
+    'id': getUserUri(name),
     'type': 'Person',
     'preferredUsername': name,
     'inbox': getInboxUri(name),
