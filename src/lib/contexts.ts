@@ -519,10 +519,8 @@ const activitystreams = {
 	},
 };
 
-export const activitystreams_url = 'https://www.w3.org/ns/activitystreams';
-
 export const CONTEXTS: Record<string, unknown> = {
 	'https://w3id.org/identity/v1': id_v1,
 	'https://w3id.org/security/v1': security_v1,
-	[activitystreams_url]: activitystreams,
+	'https://www.w3.org/ns/activitystreams' : activitystreams,
 };

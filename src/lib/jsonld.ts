@@ -1,5 +1,6 @@
-import { activitystreams_url, CONTEXTS } from './contexts';
+import { CONTEXTS } from './contexts';
 import * as jsonld from 'jsonld';
+import { ActivityStreamsContext } from './activities/contexts';
 
 
 const nodeDocumentLoader = (jsonld as any).documentLoaders.node();
@@ -7,7 +8,7 @@ const nodeDocumentLoader = (jsonld as any).documentLoaders.node();
   
 export const compact = async (doc: any) => {
     const context = {
-        '@context': activitystreams_url
+        '@context': ActivityStreamsContext
     }
     const documentLoader = async (url: string) => {
         if(url in CONTEXTS) {

@@ -7,6 +7,7 @@ import { generateCreate } from "server/activitypub/streams/create";
 import { generateNote, statusInclude } from "server/activitypub/streams/note";
 import { getOutboxUri } from "lib/uris";
 import { activitystreams_url } from "lib/contexts";
+import { StatusContext } from "lib/activities/contexts";
 
 const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, page, min_id, max_id } = req.query;
@@ -30,7 +31,6 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const outboxUrl = getOutboxUri(foundUser.name);
-    const streamsContextUrl = "https://www.w3.org/ns/activitystreams";
     const publicVisibilities = [
         Visibility.Public,
         Visibility.Unlisted
@@ -93,7 +93,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
         
         const creates = statuses.map(e => generateCreate(foundUser.name, env.HOST, generateNote(foundUser.name, env.HOST, e)))
         const outbox: IOrderedCollectionPage = {
-            "@context": activitystreams_url,
+            "@context": StatusContext,
             type: 'OrderedCollectionPage',
             orderedItems: creates,
             partOf: outboxUrl,
