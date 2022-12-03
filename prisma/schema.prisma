@@ -35,7 +35,7 @@ model OauthApplication {
 }
 
 model OauthAccessToken {
-  id                    String           @default(dbgenerated()) @id
+  id                    String           @default(cuid()) @id
   userId                String
   applicationId         String
   token                 String           @unique
@@ -53,7 +53,7 @@ model OauthAccessToken {
 }
 
 model OauthAccessGrant {
-  id            String           @default(dbgenerated()) @id
+  id            String           @default(cuid()) @id
   userId        String
   applicationId String
   token         String           @unique
