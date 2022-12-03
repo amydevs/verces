@@ -3,8 +3,8 @@ import { prisma } from "server/db/client";
 import { type IOrderedCollectionPage } from "server/activitypub/type";
 import { Prisma, Visibility } from "@prisma/client";
 import { env } from "env/server.mjs";
-import { generateCreate } from "server/activitypub/streams/create";
-import { generateNote, statusInclude } from "server/activitypub/streams/note";
+import { generateCreate } from "lib/activities/create";
+import { generateNote, statusInclude } from "lib/activities/note";
 import { getOutboxUri } from "lib/uris";
 import { ActivityStreamsContext, StatusContext } from "lib/activities/contexts";
 

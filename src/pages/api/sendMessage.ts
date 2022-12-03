@@ -1,7 +1,7 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateCreate } from "server/activitypub/streams/create";
-import { generateNote, statusInclude } from "server/activitypub/streams/note";
+import { generateCreate } from "lib/activities/create";
+import { generateNote, statusInclude } from "lib/activities/note";
 import { getServerAuthSession } from "server/common/get-server-auth-session";
 
 import crypto from 'crypto';
