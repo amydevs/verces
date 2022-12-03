@@ -1,7 +1,7 @@
-import { router, publicProcedure, protectedProcedure } from "../../trpc";
+import { router, protectedProcedure } from "../../trpc";
 import { z } from "zod";
 import { generateSecret } from "../utils";
-import type { zError } from "server/trpc/zod";
+import { RES_ERROR } from "lib/errors";
 
 export const oauthRouter = router({
     authorize: protectedProcedure
@@ -26,7 +26,7 @@ export const oauthRouter = router({
                 throw {
                     error: "Redirect Not Found",
                     description: "Redirect Not Found"
-                } as typeof zError._type;
+                } as typeof RES_ERROR._type;
             }
             const grant = await ctx.prisma.oauthAccessGrant.create({
                 data: {
