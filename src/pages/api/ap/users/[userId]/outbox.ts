@@ -48,29 +48,30 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     if (typeof page === 'string' && page.toLowerCase() === 'true' ) {
         
         let page_options = Prisma.validator<Prisma.StatusFindManyArgs>()({});
-          
-        if (typeof min_id === 'string') {
-            // implement last page later
-            page_options = {
-                cursor: {
-                    id: min_id
-                },
-                take: -1 -objPerPage,
-            }
-        }
-        else if (typeof max_id === 'string') {
-            page_options = {
-                cursor: {
-                    id: max_id
-                },
-                skip: 1,
-                take: objPerPage
-            }
-        }
-        else {
-            page_options = {
-                take: objPerPage
-            }
+        
+        switch ('string') {
+            case (typeof min_id):
+                // implement last page later
+                page_options = {
+                    cursor: {
+                        id: min_id
+                    },
+                    take: -1 -objPerPage,
+                }
+                break;
+            case (typeof max_id): 
+                page_options = {
+                    cursor: {
+                        id: max_id
+                    },
+                    skip: 1,
+                    take: objPerPage
+                }
+                break;
+            default:
+                page_options = {
+                    take: objPerPage
+                }
         }
         const statuses = await prisma.status.findMany({
             ...statusInclude,
