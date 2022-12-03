@@ -102,8 +102,9 @@ export interface IOrderedCollection extends IObject {
 export interface IOrderedCollectionPage extends IObject {
 	type: 'OrderedCollectionPage';
 	orderedItems: ApObject;
-	next: ApObject;
-	prev: ApObject;
+	partOf: ApObject;
+	next?: ApObject;
+	prev?: ApObject;
 }
 
 export const validPost = ['Note', 'Question', 'Article', 'Audio', 'Document', 'Image', 'Page', 'Video', 'Event'];

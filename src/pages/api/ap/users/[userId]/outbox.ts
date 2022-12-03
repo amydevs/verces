@@ -91,10 +91,14 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             "@context": streamsContextUrl,
             type: 'OrderedCollectionPage',
             orderedItems: creates,
-            next: `${outboxUrl}?page=true&max_id=${statuses[statuses.length - 1]?.id || 0}`,
-            prev: `${outboxUrl}?page=true&min_id=${statuses[0]?.id || 0}`,
+            partOf: outboxUrl,
             attributedTo: actorUrl
         }
+        if (creates.length !== 0) {
+            outbox.next = `${outboxUrl}?page=true&max_id=${statuses[statuses.length - 1]?.id || 0}`;
+            outbox.prev = `${outboxUrl}?page=true&min_id=${statuses[0]?.id || 0}`;
+        }
+
         return res.json(outbox);
     }
     else {
