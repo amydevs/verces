@@ -21,6 +21,15 @@ export const getInboxUri = (user?: string, options = defaultParams) => {
         return new URL('/inbox', getIndexUri(options))
     }
 }
+export const getOutboxUri = (user: string, options = defaultParams) => {
+    return new URL('/inbox', getUserUri(user, options))
+}
+export const getFollowersUri = (user: string, options = defaultParams) => {
+    return new URL('/followers', getUserUri(user, options))
+}
+export const getFollowingUri = (user: string, options = defaultParams) => {
+    return new URL('/following', getUserUri(user, options))
+}
 
 export const getStatusUri = (user: string, status: string, options = defaultParams) => {
     return new URL(`/statuses/${status}`, getUserUri(user, options))

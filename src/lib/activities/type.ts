@@ -2,14 +2,14 @@ export type obj = { [x: string]: any };
 export type ApObject = IObject | string | (IObject | string)[];
 
 export interface IObject {
-	'@context': string | string[] | obj | obj[];
+	'@context'?: string | string[] | obj | obj[];
 	type: string | string[];
 	id?: string;
 	summary?: string;
 	published?: string;
 	cc?: ApObject;
 	to?: ApObject;
-	attributedTo: ApObject;
+	attributedTo?: ApObject;
 	attachment?: any[];
 	inReplyTo?: any;
 	replies?: ICollection;
