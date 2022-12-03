@@ -89,9 +89,11 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             ...page_options
         })
         if (min_id === '0') {
+            // the array is reversed when getting the last page of posts... so let's reverse it back!
             statuses.reverse()
         }
         if (statuses.length > objPerPage) {
+            // this will happen when using min_id
             statuses.length = objPerPage
         }
         
@@ -124,7 +126,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             "type": "OrderedCollection",
             "totalItems": count,
             "first": `${outboxUrl}?page=true`,
-            "last": `${outboxUrl}?page=true`,
+            "last": `${outboxUrl}?page=true&min_id=0`,
             "attributedTo": actorUrl
         });
     }
