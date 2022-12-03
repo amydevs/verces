@@ -7,8 +7,8 @@ import { sendResError } from "lib/errors";
 import type { Prisma } from "@prisma/client";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-const generateActor = (user: Prisma.UserGetPayload<{}>, privateKey: string): IActor => {
-    const { name, displayName } = user;
+const generateActor = (user: Prisma.UserGetPayload<{ include: { keyPair: true } }>): IActor => {
+    const { name, displayName, keyPair } = user;
     const userUri = getUserUri(name);
     return {
         "@context": ActorContext,
@@ -22,11 +22,13 @@ const generateActor = (user: Prisma.UserGetPayload<{}>, privateKey: string): IAc
         "followers": getFollowersUri(name),
         "following": getFollowingUri(name),
         "url": getUserUrl(name),
-        "publicKey": {
-            "id": `${userUri}#main-key`,
-            "owner": userUri,
-            "publicKeyPem": privateKey
-        },
+        ...(keyPair?.publicKey ? {
+            "publicKey": {
+                "id": `${userUri}#main-key`,
+                "owner": userUri,
+                "publicKeyPem": keyPair.publicKey
+            },
+        } : {}),
         "endpoints": {
             "sharedInbox": getInboxUri()
         }
@@ -50,7 +52,7 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
         return sendResError(res, 404);
     }
   
-    return res.status(200).json(generateActor(foundUser, foundUser.keyPair.privateKey));
+    return res.status(200).json(generateActor(foundUser));
 };
 
 export default user;
