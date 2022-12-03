@@ -6,8 +6,7 @@ import { env } from "env/server.mjs";
 import { generateCreate } from "server/activitypub/streams/create";
 import { generateNote, statusInclude } from "server/activitypub/streams/note";
 import { getOutboxUri } from "lib/uris";
-import { activitystreams_url } from "lib/contexts";
-import { StatusContext } from "lib/activities/contexts";
+import { ActivityStreamsContext, StatusContext } from "lib/activities/contexts";
 
 const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, page, min_id, max_id } = req.query;
@@ -117,6 +116,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             }
         })
         return res.json({
+            "@context": ActivityStreamsContext,
             "type": "OrderedCollection",
             "totalItems": count,
             "first": `${outboxUrl}?page=true`,
