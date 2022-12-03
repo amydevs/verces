@@ -2,25 +2,27 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
 import { env } from "env/server.mjs";
 import { type IActor } from "server/activitypub/type";
+import { getFollowersUri, getInboxUri, getOutboxUri, getUserUri } from "lib/uris";
 
-const generateActor = (name: string, domain: string, pubKey: string): IActor => {
+const generateActor = (name: string, pubKey: string): IActor => {
+  const userUri = getUserUri(name);
   return {
     '@context': [
       'https://www.w3.org/ns/activitystreams',
       'https://w3id.org/security/v1'
     ],
 
-    'id': `https://${domain}/users/${name}`,
-    'attributedTo': `https://${domain}/users/${name}`,
+    'id': userUri,
+    'attributedTo': userUri,
     'type': 'Person',
-    'preferredUsername': `${name}`,
-    'inbox': `https://${domain}/users/${name}/inbox`,
-    'outbox': `https://${domain}/users/${name}/outbox`,
-    'followers': `https://${domain}/users/${name}/followers`,
+    'preferredUsername': name,
+    'inbox': getInboxUri(name),
+    'outbox': getOutboxUri(name),
+    'followers': getFollowersUri(name),
 
     'publicKey': {
-      'id': `https://${domain}/users/${name}#main-key`,
-      'owner': `https://${domain}/users/${name}`,
+      'id': `${userUri}#main-key`,
+      'owner': userUri,
       'publicKeyPem': pubKey
     }
   };
