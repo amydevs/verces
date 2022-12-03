@@ -29,9 +29,17 @@ const generateActor = (user: Prisma.UserGetPayload<{ include: { keyPair: true } 
                 "publicKeyPem": keyPair.publicKey
             },
         } : {}),
+        "manuallyApprovesFollowers": false,
         "endpoints": {
             "sharedInbox": getInboxUri()
-        }
+        },
+        ...(user.image ? {
+            "icon": {
+                "type": "Image",
+                "mediaType": "image/jpeg",
+                "url": user.image
+            } 
+        }: {})
     };
 };
 
