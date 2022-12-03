@@ -5,7 +5,8 @@ import { Prisma, Visibility } from "@prisma/client";
 import { env } from "env/server.mjs";
 import { generateCreate } from "server/activitypub/streams/create";
 import { generateNote, statusInclude } from "server/activitypub/streams/note";
-import { getOutboxUri, getUserUri } from "lib/uris";
+import { getOutboxUri } from "lib/uris";
+import { activitystreams_url } from "lib/contexts";
 
 const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, page, min_id, max_id } = req.query;
@@ -92,7 +93,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
         
         const creates = statuses.map(e => generateCreate(foundUser.name, env.HOST, generateNote(foundUser.name, env.HOST, e)))
         const outbox: IOrderedCollectionPage = {
-            "@context": streamsContextUrl,
+            "@context": activitystreams_url,
             type: 'OrderedCollectionPage',
             orderedItems: creates,
             partOf: outboxUrl,
@@ -116,7 +117,6 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             }
         })
         return res.json({
-            "@context": streamsContextUrl,
             "type": "OrderedCollection",
             "totalItems": count,
             "first": `${outboxUrl}?page=true`,
