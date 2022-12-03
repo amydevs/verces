@@ -2,14 +2,12 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
 import { type IActor } from "server/activitypub/type";
 import { getFollowersUri, getFollowingUri, getInboxUri, getOutboxUri, getUserUri } from "lib/uris";
+import { ActorContext } from "lib/activities/contexts";
 
 const generateActor = (name: string, pubKey: string): IActor => {
   const userUri = getUserUri(name);
   return {
-    '@context': [
-      'https://www.w3.org/ns/activitystreams',
-      'https://w3id.org/security/v1'
-    ],
+    '@context': ActorContext,
 
     'id': userUri,
     'attributedTo': userUri,
