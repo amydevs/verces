@@ -24,7 +24,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!foundStatus) {
         return res.status(404).send('Not Found')
     }
-    return res.json(generateCreate(foundStatus.user.name, env.HOST, generateNote(foundStatus.user.name, env.HOST, foundStatus, false)));
+    return res.json(generateCreate(foundStatus.user.name, env.HOST, generateNote(foundStatus.user.name, foundStatus, false)));
 };
 
 export default status;

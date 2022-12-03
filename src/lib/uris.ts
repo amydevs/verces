@@ -12,6 +12,9 @@ export const getIndexUri = ({ protocol, host } = defaultParams) => {
 export const getUserUri = (user: string, options = defaultParams) => {
     return new URL(`/users/${user}`, getIndexUri(options)).toString()
 }
+export const getUserUrl = (user: string, options = defaultParams) => {
+    return new URL(`/@/${user}`, getIndexUri(options)).toString()
+}
 
 export const getInboxUri = (user?: string, options = defaultParams) => {
     if (user) {
@@ -34,7 +37,12 @@ export const getFollowingUri = (user: string, options = defaultParams) => {
 export const getStatusUri = (user: string, status: string, options = defaultParams) => {
     return new URL(`${getUserUri(user, options)}/statuses/${status}`).toString()
 }
+export const getStatusUrl = (user: string, status: string, options = defaultParams) => {
+    return new URL(`${getUserUrl(user, options)}/${status}`).toString()
+}
 
 export const getStatusActivityUri = (user: string, status: string, options = defaultParams) => {
     return new URL(`${getStatusUri(user, status, options)}/activity`).toString()
 }
+
+export const PublicStream = 'https://www.w3.org/ns/activitystreams#Public';
