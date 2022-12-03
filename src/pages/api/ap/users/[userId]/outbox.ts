@@ -49,39 +49,48 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
         
         let page_options = Prisma.validator<Prisma.StatusFindManyArgs>()({});
         
-        switch ('string') {
-            case (typeof min_id):
-                // implement last page later
+        if (typeof min_id === 'string') {
+            if (min_id === '0') {   
+                page_options = {
+                    orderBy: {
+                        createdAt: 'asc'
+                    },
+                } satisfies Prisma.StatusFindManyArgs;
+            }
+            else {
                 page_options = {
                     cursor: {
                         id: min_id
                     },
                     take: -1 -objPerPage,
-                }
-                break;
-            case (typeof max_id): 
-                page_options = {
-                    cursor: {
-                        id: max_id
-                    },
-                    skip: 1,
-                    take: objPerPage
-                }
-                break;
-            default:
-                page_options = {
-                    take: objPerPage
-                }
+                } satisfies Prisma.StatusFindManyArgs;
+            }
         }
+        else if (typeof max_id === 'string') {
+            page_options = {
+                cursor: {
+                    id: max_id
+                },
+                skip: 1,
+            } satisfies Prisma.StatusFindManyArgs;
+        }
+
         const statuses = await prisma.status.findMany({
-            ...statusInclude,
             where: {
                 user: {
                     id: foundUser.id,
                 },
             },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            take: objPerPage,
+            ...statusInclude,
             ...page_options
         })
+        if (min_id === '0') {
+            statuses.reverse()
+        }
         if (statuses.length > objPerPage) {
             statuses.length = objPerPage
         }
