@@ -18,6 +18,7 @@
     "@trpc/react-query": "^10.0.0",
     "@trpc/server": "^10.0.0",
     "jsonld": "^8.1.0",
+    "nearley": "^2.20.1",
     "next": "13.0.2",
     "next-auth": "^4.15.1",
     "nextjs-cors": "^2.1.2",
