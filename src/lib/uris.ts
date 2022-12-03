@@ -25,3 +25,7 @@ export const getInboxUri = (user?: string, options = defaultParams) => {
 export const getStatusUri = (user: string, status: string, options = defaultParams) => {
     return new URL(`/statuses/${status}`, getUserUri(user, options))
 }
+
+export const getStatusActivityUri = (user: string, status: string, options = defaultParams) => {
+    return new URL(`/activity`, getStatusUri(user, status, options))
+}
