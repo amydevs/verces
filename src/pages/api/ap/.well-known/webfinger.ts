@@ -2,7 +2,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "../../../../server/db/client";
 import { env } from "../../../../env/server.mjs";
 import { sendResError } from '../../../../lib/errors';
-import { getUserUri } from '../../../../lib/uris';
+import { getUserUri, defaultParams } from '../../../../lib/uris'
 
 const generateWebfinger = (name: string, domain: string) => {
     return {
@@ -12,7 +12,7 @@ const generateWebfinger = (name: string, domain: string) => {
             {
                 'rel': 'self',
                 'type': 'application/activity+json',
-                'href': getUserUri(name)
+                'href': getUserUri(name, Object.assign(defaultParams, { host: domain }))
             }
         ]
     };
@@ -39,7 +39,7 @@ const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
         return sendResError(res, 404)
     }
 
-    return res.status(200).json(generateWebfinger(reference, env.HOST));
+    return res.status(200).json(generateWebfinger(foundWebFinger.name, env.HOST));
 };
   
 export default webfinger;
