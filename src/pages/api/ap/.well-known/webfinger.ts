@@ -27,8 +27,9 @@ const webfinger = async (req: NextApiRequest, res: NextApiResponse) => {
     if (reference.startsWith(acct)) {
         reference = reference.substring(acct.length)
     }
-    const [username, host] = reference.split("@", 1);
-    if (host !== env.HOST) {
+
+    const [username, host] = reference.split("@", 2);
+    if (!host && host !== env.HOST) {
         return sendResError(res, 404)
     }
 
