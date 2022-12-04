@@ -27,8 +27,8 @@ model OauthApplication {
   clientSecret String
   redirectUris Json               @default("[]")
   scopes       Json               @default("[]")
-  createdAt    DateTime           @default(now()) @db.Timestamptz(6)
-  updatedAt    DateTime           @default(now()) @updatedAt @db.Timestamptz(6)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @default(now()) @updatedAt
   grants       Json               @default("[]")
   accessTokens OauthAccessToken[]
   accessGrants OauthAccessGrant[]
@@ -40,11 +40,11 @@ model OauthAccessToken {
   applicationId         String
   token                 String           @unique
   refreshToken          String?          @unique
-  tokenExpiresAt        DateTime?        @db.Timestamptz(6)
-  refreshTokenExpiresAt DateTime?        @db.Timestamptz(6)
+  tokenExpiresAt        DateTime?        
+  refreshTokenExpiresAt DateTime?
   scopes                Json             @default("[]")
-  createdAt             DateTime         @default(now()) @db.Timestamptz(6)
-  updatedAt             DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @default(now()) @updatedAt 
   application           OauthApplication @relation(fields: [applicationId], references: [id])
   user                  User             @relation(fields: [userId], references: [id])
 
@@ -57,13 +57,13 @@ model OauthAccessGrant {
   userId        String
   applicationId String
   token         String           @unique
-  expiresAt     DateTime         @db.Timestamptz(6)
+  expiresAt     DateTime
   redirectUri   String
   codeChallengeMethod String?
   codeChallenge String?
   scopes        Json             @default("[]")
-  createdAt     DateTime         @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @default(now()) @updatedAt
   application   OauthApplication @relation(fields: [applicationId], references: [id])
   user          User             @relation(fields: [userId], references: [id])
 
@@ -162,7 +162,7 @@ model Status {
   url String? @unique // The human readable url of a note. it will be null when the note is local.
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Reply {
@@ -186,7 +186,7 @@ model Mention {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 enum Visibility {
@@ -205,7 +205,7 @@ model Follow {
   targetUser User @relation("FollowTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   type FollowType
 }
