@@ -2,6 +2,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "../../../../server/db/client";
 import { env } from "../../../../env/server.mjs";
 import { sendResError } from '../../../../lib/errors';
+import { getUserUri } from '../../../../lib/uris';
 
 const generateWebfinger = (name: string, domain: string) => {
     return {
@@ -9,9 +10,9 @@ const generateWebfinger = (name: string, domain: string) => {
     
         'links': [
             {
-            'rel': 'self',
-            'type': 'application/activity+json',
-            'href': `https://${domain}/users/${name}`
+                'rel': 'self',
+                'type': 'application/activity+json',
+                'href': getUserUri(name)
             }
         ]
     };
