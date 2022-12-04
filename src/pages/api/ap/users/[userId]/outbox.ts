@@ -2,7 +2,6 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
 import { type IOrderedCollectionPage } from "lib/activities/type";
 import { Prisma, Visibility } from "@prisma/client";
-import { env } from "env/server.mjs";
 import { generateCreate } from "lib/activities/create";
 import { generateNote, statusInclude } from "lib/activities/note";
 import { getOutboxUri } from "lib/uris";
@@ -91,7 +90,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             statuses.length = objPerPage;
         }
         
-        const creates = statuses.map(e => generateCreate(foundUser.name, generateNote(foundUser.name, e)));
+        const creates = statuses.map(e => generateCreate(generateNote(foundUser.name, e)));
         const outbox: IOrderedCollectionPage = {
             "@context": StatusContext,
             type: "OrderedCollectionPage",
