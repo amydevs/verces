@@ -20,6 +20,10 @@ const config = {
         destination: '/api/ap/.well-known/:path*'
       },
       {
+        source: '/inbox',
+        destination: '/api/ap/inbox'
+      },
+      {
         source: '/users/:user*',
         destination: '/api/ap/users/:user*',
         has: [
