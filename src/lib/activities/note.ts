@@ -29,6 +29,8 @@ export const generateNote = (name: string, status: StatusSmall, context = true):
         "attributedTo": getUserUri(name),
         "content": status.text,
         "url": getStatusUrl(name, status.id),
+        "to": [],
+        "cc": []
     };
     if (context) {
         note["@context"] = StatusContext;
