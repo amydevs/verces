@@ -45,4 +45,12 @@ export const getStatusActivityUri = (user: string, status: string, options = def
     return new URL(`${getStatusUri(user, status, options)}/activity`).toString();
 };
 
+const userStatusRegex = new RegExp(/http(s)?:\/\/[^\/]*\/+users\/+(?<userIndex>[^\/]+)(\/+statuses\/(?<statusIndex>[^\/]+))?/);
+export const getUserStatusFromUri = (uri: string): { userIndex?: string, statusIndex?: string } => {
+    const ret = userStatusRegex.exec(uri)?.groups;
+    return ret ?? {};
+};
+
+
+
 export const PublicStream = "https://www.w3.org/ns/activitystreams#Public";
