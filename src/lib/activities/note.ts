@@ -46,12 +46,6 @@ export const generateNote = (name: string, status: StatusSmall, context = true):
 
     // set to and cc
     const followerStream = getFollowersUri(name);
-    if (!Array.isArray(note.to)) {
-        note.cc = [];
-    }
-    if (!Array.isArray(note.cc)) {
-        note.cc = [];
-    }
     const mentions = status.mentions.map(e => {
         const { uri } = e.user;
         if (uri?.length) {
