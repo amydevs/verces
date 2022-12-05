@@ -1,15 +1,15 @@
 import type { ApObject, IObject } from "./type";
 
-export const toObject = async (doc: ApObject): Promise<IObject | IObject[]> => {
+export const getApObjectBody = async (doc: ApObject): Promise<IObject | IObject[]> => {
     if (Array.isArray(doc)) {
-        return Promise.all(doc.map(e => toSingleObject(e)));
+        return Promise.all(doc.map(e => getSingleApObjectBody(e)));
     }
     else {
-        return toSingleObject(doc);
+        return getSingleApObjectBody(doc);
     }
 };
 
-export const toSingleObject = async (doc: IObject | string): Promise<IObject> => {
+export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObject> => {
     if (typeof doc === "object") {
         return doc;
     }
