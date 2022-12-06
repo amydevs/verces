@@ -31,16 +31,27 @@ export const statusFromNote = async (doc: IPost | string) => {
         const user = await userFromActor(actor);
         const toCc = toCcNormalizer(gotDoc);
         const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
+        
+        
 
-        const statusData = {
+        const statusData: Prisma.StatusCreateArgs = {
             data: {
                 text: `${gotDoc.content}`,
                 userId: user.id,
                 uri: gotDoc.id,
                 url: gotDoc.url?.toString(),
-                visibility
+                visibility,
             }
         };
+
+        if (gotDoc.inReplyTo) {
+            const replyStatus = await statusFromNote(gotDoc.inReplyTo);
+            statusData.data.replyingTo = {
+                connect: {
+                    statusId: replyStatus?.id
+                }
+            };
+        }
 
         return await prisma.status.upsert({
             where: {
