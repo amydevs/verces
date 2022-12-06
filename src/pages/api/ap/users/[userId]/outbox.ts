@@ -67,12 +67,28 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
 
         const statuses = await prisma.status.findMany({
             where: {
-                user: {
-                    id: foundUser.id,
-                },
-                visibility: {
-                    in: publicVisibilities
-                }
+                OR: [
+                    {
+                        user: {
+                            id: foundUser.id,
+                        },
+                        visibility: {
+                            in: publicVisibilities
+                        }
+                    },
+                    {
+                        restatuses: {
+                            some: {
+                                userId: foundUser.id,
+                                status: {
+                                    visibility: {
+                                        in: publicVisibilities
+                                    }
+                                }
+                            },
+                        }
+                    }
+                ]
             },
             orderBy: {
                 createdAt: "desc"
