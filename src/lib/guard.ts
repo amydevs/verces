@@ -25,7 +25,10 @@ export function signatureGuard<T>(
             return sendResError(res, 400, "Public key does exist for actor.");
         }
         if (parsed.signingString) {
-            parsed.signingString = parsed.signingString.replace("?nextInternalLocale=en", "");
+            parsed.signingString = parsed.signingString.replace(/(\?|\&)nextInternalLocale=[^\n|&]*/, "");
+            if (parsed.signingString.includes("&") && !parsed.signingString.includes("?")) {
+                parsed.signingString.replace("&", "?");
+            }
         }
         console.log("Signature Verified"+httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem));
         if (!httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem)) {
