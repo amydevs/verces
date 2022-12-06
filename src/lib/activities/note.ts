@@ -110,6 +110,7 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                         uri: gotDoc.inReplyTo
                     },
                 }) ?? await statusFromNote(gotDoc.inReplyTo, xprisma);
+                console.log(repliedToStatus);
                 await xprisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
@@ -117,7 +118,7 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                     update: {},
                     create: {
                         status: {connect: {id: createdStatus.id}},
-                        replyingToStatus: {connect: {uri: gotDoc.inReplyTo}},
+                        replyingToStatus: {connect: {id: repliedToStatus?.id}},
                         replyingToUser: {connect: {id: repliedToStatus?.userId}}
                     }
                 });
