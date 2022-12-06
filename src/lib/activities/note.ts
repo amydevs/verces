@@ -3,7 +3,7 @@ import { Visibility, type Prisma } from "@prisma/client";
 import { StatusContext } from "./contexts";
 import { getFollowersUri, getIndexUri, getStatusUri, getStatusUrl, getUserUri, PublicStream } from "lib/uris";
 import { prisma } from "server/db/client";
-import { userFromActor, userFromUri } from "./actor";
+import { userFromActor } from "./actor";
 import { getApObjectBody } from "./utils";
 
 export const statusInclude = {
