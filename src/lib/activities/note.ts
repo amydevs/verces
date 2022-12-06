@@ -43,18 +43,38 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
         };        
 
         // get replies (maybe add a limit to this...)
-        if (gotDoc.inReplyTo) {
-            const replyStatusId = await xprisma.status.findFirst({
-                where: {
-                    uri: gotDoc.inReplyTo
-                }
-            }).then(e => e?.id) ?? await statusFromNote(gotDoc.inReplyTo, xprisma).then(e => e?.id);
-            statusData.data.replyingTo = {
-                connect: {
-                    statusId: replyStatusId
-                }
-            };
-        }
+        // if (gotDoc.inReplyTo) {
+        //     const inReplyTo = gotDoc.inReplyTo;
+        //     const localStatus = getUserStatusFromUri(inReplyTo);
+        //     if (localStatus.statusIndex && localStatus.userIndex) {
+        //         statusData.data.replyingTo = {
+        //             connectOrCreate: {
+        //                 where: {
+        //                     statusId: localStatus.statusIndex
+        //                 },
+        //                 create: {
+        //                     replyingToStatusId: localStatus.statusIndex,
+        //                     replyingToUserId: localStatus.userIndex
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     const replyStatusId = await xprisma.status.findFirst({
+        //         where: {
+        //             uri: gotDoc.inReplyTo
+        //         }
+        //     }).then(e => e?.id) ?? await statusFromNote(gotDoc.inReplyTo, xprisma).then(e => e?.id);
+        //     statusData.data.replyingTo = {
+        //         connectOrCreate: {
+        //             where: {
+        //                 statusId: replyStatusId
+        //             },
+        //             create: {
+                        
+        //             }
+        //         }
+        //     };
+        // }
 
         const createdStatus = await xprisma.status.upsert({
             where: {
@@ -81,7 +101,8 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                 user: {
                     name: {
                         notIn: mentionedLocalUsersByIndex
-                    }
+                    },
+                    host: ""
                 },
                 statusId: createdStatus.id
             }
@@ -91,7 +112,8 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                 where: {
                     name: {
                         in: mentionedLocalUsersByIndex
-                    }
+                    },
+                    host: ""
                 }
             }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
             await xprisma.mention.createMany({
