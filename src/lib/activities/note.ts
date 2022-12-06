@@ -71,7 +71,7 @@ export const getVisibility = ({ to, cc }: ToCc, followersUri: string): Visibilit
     if (cc.includes(PublicStream)) {
         return Visibility.Unlisted;
     }
-    if (cc.includes(followersUri)) {
+    if (cc.includes(followersUri) || to.includes(followersUri)) {
         return Visibility.FollowOnly;
     }
     return Visibility.MentionOnly;
