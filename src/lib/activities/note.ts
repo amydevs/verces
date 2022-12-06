@@ -32,18 +32,26 @@ export const statusFromNote = async (doc: IPost | string) => {
         const toCc = toCcNormalizer(gotDoc);
         const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
 
-        // add updating later
-        return await prisma.status.upsert({
-            where: {
-                uri: gotDoc.id
-            },
-            update: {},
-            create: {
+        const statusData = {
+            data: {
                 text: `${gotDoc.content}`,
                 userId: user.id,
                 uri: gotDoc.id,
                 url: gotDoc.url?.toString(),
                 visibility
+            }
+        };
+
+        return await prisma.status.upsert({
+            where: {
+                uri: gotDoc.id
+            },
+            update: {
+                ...statusData.data,
+                updatedAt: new Date(),
+            },
+            create: {
+                ...statusData.data
             }
         });
     }

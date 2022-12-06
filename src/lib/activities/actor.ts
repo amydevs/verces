@@ -26,7 +26,10 @@ export const userFromActor = async (actor: IActor | string) => {
     let tempDbActor = undefined;
     try {
         tempDbActor = await prisma.user.update({
-            ...updateData,
+            data: {
+                ...updateData.data,
+                updatedAt: new Date()
+            },
             where: {
                 uri: typeof actor === "string" ? actor : actor.id,
             },
