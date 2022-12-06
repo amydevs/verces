@@ -18,6 +18,7 @@ const inbox = signatureGuard(async (req: NextApiRequest, res: NextApiResponse) =
             await statusFromNote(body);
         }
     }
+    return res.send("");
 });
 
 export default inbox;
