@@ -86,18 +86,18 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                 statusId: createdStatus.id
             }
         });
-        // if (mentionedLocalUsersByIndex.length > 0) {
-        //     const mentions = await xprisma.user.findMany({
-        //         where: {
-        //             name: {
-        //                 in: mentionedLocalUsersByIndex
-        //             }
-        //         }
-        //     }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
-        //     await xprisma.mention.createMany({
-        //         data: mentions
-        //     });
-        // }
+        if (mentionedLocalUsersByIndex.length > 0) {
+            const mentions = await xprisma.user.findMany({
+                where: {
+                    name: {
+                        in: mentionedLocalUsersByIndex
+                    }
+                }
+            }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
+            await xprisma.mention.createMany({
+                data: mentions
+            });
+        }
         return createdStatus;
     }
 };
