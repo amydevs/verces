@@ -107,10 +107,10 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
             else {
                 const repliedToStatus = await xprisma.status.findFirst({
                     where: {
-                        uri: gotDoc.inReplyTo
+                        uri: inReplyTo
                     },
-                }) ?? await statusFromNote(gotDoc.inReplyTo, xprisma);
-                console.log(repliedToStatus);
+                }) ?? await statusFromNote(inReplyTo, xprisma);
+                console.log(inReplyTo, repliedToStatus);
                 await xprisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
