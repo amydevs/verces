@@ -17,7 +17,6 @@ export function signatureGuard<T>(
             return sendResError(res, 400, "Invalid Signature");
         }
         const parsed = httpSignature.parseRequest(req);
-        console.log(parsed);
         if (!parsed.keyId) {
             return sendResError(res, 400, "Cannot find public key from user keyId.");
         }
@@ -25,6 +24,7 @@ export function signatureGuard<T>(
         if (!actor.publicKey?.publicKeyPem) {
             return sendResError(res, 400, "Public key does exist for actor.");
         }
+        console.log(httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem));
         if (!httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem)) {
             return sendResError(res, 400, "Signature could not be verified with public key.");
         }
