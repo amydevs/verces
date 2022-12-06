@@ -1,11 +1,5 @@
 import crypto from "crypto";
 
-type StringsRecord = Record<string, string>
-
-export const parse = async (signature: string): Promise<StringsRecord> => {
-    return {};
-};
-
 export const generateKeyPair = async () => {
     return await new Promise<{publicKey: string, privateKey: string}>((resolve, reject) => {
         crypto.generateKeyPair("rsa", {
