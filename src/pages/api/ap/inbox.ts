@@ -1,5 +1,5 @@
 import { statusFromNote } from "lib/activities/note";
-import { type IObject, isCreate, isPost } from "lib/activities/type";
+import { type IObject, isCreate, isPost, isUpdate } from "lib/activities/type";
 import { getApObjectBody } from "lib/activities/utils";
 import { sendResError } from "lib/errors";
 import { signatureGuard } from "lib/guard";
@@ -13,7 +13,7 @@ const inbox = signatureGuard(async (req: NextApiRequest, res: NextApiResponse) =
     }
     const parsed = (await compact(req.body)) as unknown as IObject;
     
-    if (isCreate(parsed)) {
+    if (isCreate(parsed) || isUpdate(parsed)) {
         const body = await getApObjectBody(parsed.object);
         if (!Array.isArray(body) && isPost(body)) {
             await prisma.$transaction(async (prisma) => {
