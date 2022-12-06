@@ -24,7 +24,7 @@ export const statusInclude = {
 
 type StatusSmall = Prisma.StatusGetPayload<typeof statusInclude>
 
-export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma, include: Prisma.StatusInclude = {}) => {
+export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma) => {
     const gotDoc = await getApObjectBody(doc) as IPost;
     if (typeof gotDoc.attributedTo === "string" ) {
         const actor = await getApObjectBody(gotDoc.attributedTo) as IActor;
@@ -43,9 +43,6 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
         };
 
         const createdStatus = await xprisma.status.upsert({
-            include: {
-                ...include
-            },
             where: {
                 uri: gotDoc.id
             },
