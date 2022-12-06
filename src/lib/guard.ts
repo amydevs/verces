@@ -24,6 +24,9 @@ export function signatureGuard<T>(
         if (!actor.publicKey?.publicKeyPem) {
             return sendResError(res, 400, "Public key does exist for actor.");
         }
+        if (parsed.signingString) {
+            parsed.signingString = parsed.signingString.replace("?nextInternalLocale=en", "");
+        }
         console.log(httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem), parsed, actor.publicKey.publicKeyPem);
         if (!httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem)) {
             return sendResError(res, 400, "Signature could not be verified with public key.");
