@@ -17,15 +17,18 @@ const config = {
     return [
       {
         source: '/.well-known/:path*',
-        destination: '/api/ap/.well-known/:path*'
+        destination: '/api/ap/.well-known/:path*',
+        locale: false
       },
       {
         source: '/inbox',
-        destination: '/api/ap/inbox'
+        destination: '/api/ap/inbox',
+        locale: false
       },
       {
         source: '/users/:user*',
         destination: '/api/ap/users/:user*',
+        locale: false,
         has: [
           {
             type: 'header',
