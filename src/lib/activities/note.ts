@@ -1,5 +1,5 @@
 import { IActor, IObject, type IPost } from "./type";
-import { Visibility, type Prisma } from "@prisma/client";
+import { PrismaClient, Visibility, type Prisma } from "@prisma/client";
 import { StatusContext } from "./contexts";
 import { getFollowersUri, getIndexUri, getStatusUri, getStatusUrl, getUserStatusFromUri, getUserUri, PublicStream } from "lib/uris";
 import { prisma } from "server/db/client";
@@ -24,11 +24,11 @@ export const statusInclude = {
 
 type StatusSmall = Prisma.StatusGetPayload<typeof statusInclude>
 
-export const statusFromNote = async (doc: IPost | string) => {
+export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma) => {
     const gotDoc = await getApObjectBody(doc) as IPost;
     if (typeof gotDoc.attributedTo === "string" ) {
         const actor = await getApObjectBody(gotDoc.attributedTo) as IActor;
-        const user = await userFromActor(actor);
+        const user = await userFromActor(actor, xprisma);
         const toCc = toCcNormalizer(gotDoc);
         const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
 
@@ -44,11 +44,11 @@ export const statusFromNote = async (doc: IPost | string) => {
 
         // get replies (maybe add a limit to this...)
         if (gotDoc.inReplyTo) {
-            const replyStatusId = await prisma.status.findFirst({
+            const replyStatusId = await xprisma.status.findFirst({
                 where: {
                     uri: gotDoc.inReplyTo
                 }
-            }).then(e => e?.id) ?? await statusFromNote(gotDoc.inReplyTo).then(e => e?.id);
+            }).then(e => e?.id) ?? await statusFromNote(gotDoc.inReplyTo, xprisma).then(e => e?.id);
             statusData.data.replyingTo = {
                 connect: {
                     statusId: replyStatusId
@@ -63,43 +63,40 @@ export const statusFromNote = async (doc: IPost | string) => {
             return [];
         });
         
-        const createdStatus = await prisma.$transaction(async (prisma) => {
-            const createdStatus = await prisma.status.upsert({
-                where: {
-                    uri: gotDoc.id
-                },
-                update: {
-                    ...statusData.data,
-                    updatedAt: new Date(),
-                },
-                create: {
-                    ...statusData.data
-                }
-            });
-            await prisma.mention.deleteMany({
-                where: {
-                    user: {
-                        name: {
-                            notIn: mentionedLocalUsersByIndex
-                        }
-                    },
-                    statusId: createdStatus.id
-                }
-            });
-            if (mentionedLocalUsersByIndex.length > 0) {
-                const mentions = await prisma.user.findMany({
-                    where: {
-                        name: {
-                            in: mentionedLocalUsersByIndex
-                        }
-                    }
-                }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
-                await prisma.mention.createMany({
-                    data: mentions
-                });
+        const createdStatus = await xprisma.status.upsert({
+            where: {
+                uri: gotDoc.id
+            },
+            update: {
+                ...statusData.data,
+                updatedAt: new Date(),
+            },
+            create: {
+                ...statusData.data
             }
-            return createdStatus;
         });
+        await xprisma.mention.deleteMany({
+            where: {
+                user: {
+                    name: {
+                        notIn: mentionedLocalUsersByIndex
+                    }
+                },
+                statusId: createdStatus.id
+            }
+        });
+        if (mentionedLocalUsersByIndex.length > 0) {
+            const mentions = await xprisma.user.findMany({
+                where: {
+                    name: {
+                        in: mentionedLocalUsersByIndex
+                    }
+                }
+            }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
+            await xprisma.mention.createMany({
+                data: mentions
+            });
+        }
         return createdStatus;
     }
 };

@@ -2,9 +2,9 @@ import type { ApObject, IActor, IObject } from "./type";
 import { getApObjectBody } from "./utils";
 import { prisma } from "server/db/client";
 import { getIndexUri, getUserStatusFromUri } from "lib/uris";
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
-export const userFromActor = async (actor: IActor | string) => {
+export const userFromActor = async (actor: IActor | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma) => {
     const publicActor = await getApObjectBody(actor) as IActor;
 
     const updateData = {
@@ -23,33 +23,31 @@ export const userFromActor = async (actor: IActor | string) => {
         }
     };
 
-    return prisma.$transaction(async (prisma) => {
-        let tempDbActor = undefined;
-        try {
-            tempDbActor = await prisma.user.update({
-                data: {
-                    ...updateData.data,
-                    updatedAt: new Date()
-                },
-                where: {
-                    uri: typeof actor === "string" ? actor : actor.id,
-                },
-            });
-        }
-        catch {
-            tempDbActor = await prisma.user.findFirst({
-                where: {
-                    uri: typeof actor === "string" ? actor : actor.id
-                }
-            });
-        }
+    let tempDbActor = undefined;
+    try {
+        tempDbActor = await xprisma.user.update({
+            data: {
+                ...updateData.data,
+                updatedAt: new Date()
+            },
+            where: {
+                uri: typeof actor === "string" ? actor : actor.id,
+            },
+        });
+    }
+    catch {
+        tempDbActor = await xprisma.user.findFirst({
+            where: {
+                uri: typeof actor === "string" ? actor : actor.id
+            }
+        });
+    }
 
         
-        return tempDbActor ?? 
+    return tempDbActor ?? 
         await (async () => {
-            return prisma.user.create({
+            return xprisma.user.create({
                 ...updateData
             });
         })();
-    });
 };
