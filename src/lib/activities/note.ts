@@ -56,36 +56,36 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
         });
 
         //mention stuff
-        // const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
-        //     if (e.startsWith(getIndexUri())) {
-        //         return getUserStatusFromUri(e).userIndex ?? [];
-        //     }
-        //     return [];
-        // });
-        // await xprisma.mention.deleteMany({
-        //     where: {
-        //         user: {
-        //             name: {
-        //                 notIn: mentionedLocalUsersByIndex
-        //             },
-        //             host: ""
-        //         },
-        //         statusId: createdStatus.id
-        //     }
-        // });
-        // if (mentionedLocalUsersByIndex.length > 0) {
-        //     const mentions = await xprisma.user.findMany({
-        //         where: {
-        //             name: {
-        //                 in: mentionedLocalUsersByIndex
-        //             },
-        //             host: ""
-        //         }
-        //     }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
-        //     await xprisma.mention.createMany({
-        //         data: mentions
-        //     });
-        // }
+        const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
+            if (e.startsWith(getIndexUri())) {
+                return getUserStatusFromUri(e).userIndex ?? [];
+            }
+            return [];
+        });
+        await xprisma.mention.deleteMany({
+            where: {
+                user: {
+                    name: {
+                        notIn: mentionedLocalUsersByIndex
+                    },
+                    host: ""
+                },
+                statusId: createdStatus.id
+            }
+        });
+        if (mentionedLocalUsersByIndex.length > 0) {
+            const mentions = await xprisma.user.findMany({
+                where: {
+                    name: {
+                        in: mentionedLocalUsersByIndex
+                    },
+                    host: ""
+                }
+            }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
+            await xprisma.mention.createMany({
+                data: mentions
+            });
+        }
 
         // reply stuff
         if (gotDoc.inReplyTo) {
