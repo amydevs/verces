@@ -1,4 +1,4 @@
-import { IFollow } from "./type";
+import type { IFollow } from "./type";
 import { getApObjectBody } from "./utils";
 
 export const fromFollow = async(follow: IFollow | string) => {

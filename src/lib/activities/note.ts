@@ -1,5 +1,5 @@
-import { IActor, IObject, type IPost } from "./type";
-import { PrismaClient, Visibility, type Prisma } from "@prisma/client";
+import type { IActor, IObject, IPost } from "./type";
+import { type PrismaClient, Visibility, type Prisma } from "@prisma/client";
 import { StatusContext } from "./contexts";
 import { getFollowersUri, getIndexUri, getStatusUri, getStatusUrl, getUserStatusFromUri, getUserUri, PublicStream } from "lib/uris";
 import { prisma } from "server/db/client";

@@ -1,8 +1,7 @@
-import type { ApObject, IActor, IObject } from "./type";
+import type { IActor } from "./type";
 import { getApObjectBody } from "./utils";
 import { prisma } from "server/db/client";
-import { getIndexUri, getUserStatusFromUri } from "lib/uris";
-import { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 
 export const userFromActor = async (actor: IActor | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma) => {
     const publicActor = await getApObjectBody(actor) as IActor;
