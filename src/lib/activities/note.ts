@@ -91,7 +91,7 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
         if (gotDoc.inReplyTo) {
             const inReplyTo = gotDoc.inReplyTo;
             const replyingToLocalStatus = getUserStatusFromUri(inReplyTo);
-            if (replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
+            if (inReplyTo.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
                 await xprisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
