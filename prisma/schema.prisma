@@ -121,6 +121,7 @@ model User {
   statuses         Status[]
   receivedReplies  Reply[]
   receivedMentions Mention[]
+  restatuses ReStatus[]
 
   following Follow[] @relation("FollowOrigin")
   followers Follow[] @relation("FollowTarget")
@@ -158,6 +159,7 @@ model Status {
   mentions   Mention[]
   replies    Reply[]   @relation("StatusReplies")
   replyingTo Reply?
+  restatuses ReStatus[]
 
   visibility Visibility @default(Public)
 
@@ -185,6 +187,19 @@ model Mention {
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@id([userId, statusId])
+}
+
+model ReStatus {
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  statusId String
+  status   Status @relation(fields: [statusId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
