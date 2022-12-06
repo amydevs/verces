@@ -24,7 +24,7 @@ export const statusInclude = {
 
 type StatusSmall = Prisma.StatusGetPayload<typeof statusInclude>
 
-export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma) => {
+export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma, include: Prisma.StatusInclude = {}) => {
     const gotDoc = await getApObjectBody(doc) as IPost;
     if (typeof gotDoc.attributedTo === "string" ) {
         const actor = await getApObjectBody(gotDoc.attributedTo) as IActor;
@@ -40,43 +40,12 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                 url: gotDoc.url?.toString(),
                 visibility,
             }
-        };        
-
-        // get replies (maybe add a limit to this...)
-        // if (gotDoc.inReplyTo) {
-        //     const inReplyTo = gotDoc.inReplyTo;
-        //     const localStatus = getUserStatusFromUri(inReplyTo);
-        //     if (localStatus.statusIndex && localStatus.userIndex) {
-        //         statusData.data.replyingTo = {
-        //             connectOrCreate: {
-        //                 where: {
-        //                     statusId: localStatus.statusIndex
-        //                 },
-        //                 create: {
-        //                     replyingToStatusId: localStatus.statusIndex,
-        //                     replyingToUserId: localStatus.userIndex
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     const replyStatusId = await xprisma.status.findFirst({
-        //         where: {
-        //             uri: gotDoc.inReplyTo
-        //         }
-        //     }).then(e => e?.id) ?? await statusFromNote(gotDoc.inReplyTo, xprisma).then(e => e?.id);
-        //     statusData.data.replyingTo = {
-        //         connectOrCreate: {
-        //             where: {
-        //                 statusId: replyStatusId
-        //             },
-        //             create: {
-                        
-        //             }
-        //         }
-        //     };
-        // }
+        };
 
         const createdStatus = await xprisma.status.upsert({
+            include: {
+                ...include
+            },
             where: {
                 uri: gotDoc.id
             },
@@ -90,36 +59,75 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
         });
 
         //mention stuff
-        const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
-            if (e.startsWith(getIndexUri())) {
-                return getUserStatusFromUri(e).userIndex ?? [];
-            }
-            return [];
-        });
-        await xprisma.mention.deleteMany({
-            where: {
-                user: {
-                    name: {
-                        notIn: mentionedLocalUsersByIndex
+        // const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
+        //     if (e.startsWith(getIndexUri())) {
+        //         return getUserStatusFromUri(e).userIndex ?? [];
+        //     }
+        //     return [];
+        // });
+        // await xprisma.mention.deleteMany({
+        //     where: {
+        //         user: {
+        //             name: {
+        //                 notIn: mentionedLocalUsersByIndex
+        //             },
+        //             host: ""
+        //         },
+        //         statusId: createdStatus.id
+        //     }
+        // });
+        // if (mentionedLocalUsersByIndex.length > 0) {
+        //     const mentions = await xprisma.user.findMany({
+        //         where: {
+        //             name: {
+        //                 in: mentionedLocalUsersByIndex
+        //             },
+        //             host: ""
+        //         }
+        //     }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
+        //     await xprisma.mention.createMany({
+        //         data: mentions
+        //     });
+        // }
+
+        // reply stuff
+        if (gotDoc.inReplyTo) {
+            const inReplyTo = gotDoc.inReplyTo;
+            const replyingToLocalStatus = getUserStatusFromUri(inReplyTo);
+            if (replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
+                await xprisma.reply.upsert({
+                    where: {
+                        statusId: createdStatus.id
                     },
-                    host: ""
-                },
-                statusId: createdStatus.id
+                    update: {},
+                    create: {
+                        status: {connect: {id: createdStatus.id}},
+                        replyingToStatus: {connect: {id: replyingToLocalStatus.statusIndex}},
+                        replyingToUser: {connect: {name_host: {host: "", name: replyingToLocalStatus.userIndex}}}
+                    }
+                });
             }
-        });
-        if (mentionedLocalUsersByIndex.length > 0) {
-            const mentions = await xprisma.user.findMany({
-                where: {
-                    name: {
-                        in: mentionedLocalUsersByIndex
+            else {
+                const repliedToStatus = await xprisma.status.findFirst({
+                    where: {
+                        uri: gotDoc.inReplyTo
                     },
-                    host: ""
-                }
-            }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
-            await xprisma.mention.createMany({
-                data: mentions
-            });
+                }).then(e => ({ userId: e?.userId, statusId: e?.id })) ?? 
+                    await statusFromNote(gotDoc.inReplyTo, xprisma, {user: true}).then(e => ({ userId: e?.userId, statusId: e?.id }));
+                await xprisma.reply.upsert({
+                    where: {
+                        statusId: createdStatus.id
+                    },
+                    update: {},
+                    create: {
+                        status: {connect: {id: createdStatus.id}},
+                        replyingToStatus: {connect: {id: repliedToStatus.statusId}},
+                        replyingToUser: {connect: {id: repliedToStatus.userId}}
+                    }
+                });
+            }
         }
+
         return createdStatus;
     }
 };
