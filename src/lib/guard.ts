@@ -27,8 +27,9 @@ export function signatureGuard<T>(
         if (parsed.signingString) {
             parsed.signingString = parsed.signingString.replace(/\??nextInternalLocale=[^&]*/, "");
         }
-        console.log(httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem), parsed, actor.publicKey.publicKeyPem);
-        if (!httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem)) {
+        const signatureVerified = httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem);
+        console.log("Signature Verified: ", signatureVerified);
+        if (!signatureVerified) {
             return sendResError(res, 400, "Signature could not be verified with public key.");
         }
 

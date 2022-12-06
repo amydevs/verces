@@ -6,21 +6,22 @@ import { compact } from "lib/jsonld";
 import { type NextApiRequest, type NextApiResponse } from "next";
 
 const inbox = signatureGuard(async (req: NextApiRequest, res: NextApiResponse) => {
-    if (!req.body) {
-        return sendResError(res, 400);
-    }
-    console.log("Inbox: "+req.body);
-    const parsed = (await compact(req.body)) as unknown as IObject;
-    console.log("Parsed Inbox: "+parsed);
+    // if (!req.body) {
+    //     return sendResError(res, 400);
+    // }
+    // console.log("Inbox: "+req.body);
+    // const parsed = (await compact(req.body)) as unknown as IObject;
+    // console.log("Parsed Inbox: "+parsed);
     
-    if (isCreate(parsed)) {
-        const body = await getApObjectBody(parsed.object);
-        if (!Array.isArray(body) && isPost(body)) {
+    // if (isCreate(parsed)) {
+    //     const body = await getApObjectBody(parsed.object);
+    //     if (!Array.isArray(body) && isPost(body)) {
             
-        }
-    }
+    //     }
+    // }
 
-    res.json(parsed);
+    // res.json(parsed);
+    res.send("");
 });
 
 export default inbox;
