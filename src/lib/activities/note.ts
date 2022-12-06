@@ -62,7 +62,6 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
             }
             return [];
         });
-        console.log(mentionedLocalUsersByIndex);
         await xprisma.mention.deleteMany({
             where: {
                 user: {
@@ -83,7 +82,6 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                     host: ""
                 }
             }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
-            console.log(mentions);
             await xprisma.mention.createMany({
                 data: mentions,
                 skipDuplicates: true
