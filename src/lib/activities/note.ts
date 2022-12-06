@@ -33,7 +33,7 @@ export const statusFromNote = async (doc: IPost | string) => {
         const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
 
         // add updating later
-        prisma.status.upsert({
+        return await prisma.status.upsert({
             where: {
                 uri: gotDoc.id
             },
