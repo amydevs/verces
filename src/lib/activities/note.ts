@@ -31,8 +31,6 @@ export const statusFromNote = async (doc: IPost | string) => {
         const user = await userFromActor(actor);
         const toCc = toCcNormalizer(gotDoc);
         const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
-        
-        
 
         const statusData: Prisma.StatusCreateArgs = {
             data: {
@@ -45,10 +43,14 @@ export const statusFromNote = async (doc: IPost | string) => {
         };
 
         if (gotDoc.inReplyTo) {
-            const replyStatus = await statusFromNote(gotDoc.inReplyTo);
+            const replyStatusId = await prisma.status.findFirst({
+                where: {
+                    uri: gotDoc.inReplyTo
+                }
+            }).then(e => e?.id) ?? await statusFromNote(gotDoc.inReplyTo).then(e => e?.id);
             statusData.data.replyingTo = {
                 connect: {
-                    statusId: replyStatus?.id
+                    statusId: replyStatusId
                 }
             };
         }
