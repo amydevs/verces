@@ -12,6 +12,7 @@ export function signatureGuard<T>(
         res: NextApiResponse
     ) => {
         const headerSignature = req.headers.signature;
+        console.log(req.headers);
 
         if (!headerSignature) {
             return sendResError(res, 400, "Invalid Signature");
