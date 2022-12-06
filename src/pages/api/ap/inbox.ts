@@ -10,6 +10,7 @@ const inbox = signatureGuard(async (req: NextApiRequest, res: NextApiResponse) =
         return sendResError(res, 400);
     }
     const parsed = (await compact(req.body)) as unknown as IObject;
+    console.log(parsed);
     
     if (isCreate(parsed)) {
         const body = await getApObjectBody(parsed.object);
