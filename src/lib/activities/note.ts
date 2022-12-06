@@ -85,7 +85,8 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
             }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
             console.log(mentions);
             await xprisma.mention.createMany({
-                data: mentions
+                data: mentions,
+                skipDuplicates: true
             });
         }
 

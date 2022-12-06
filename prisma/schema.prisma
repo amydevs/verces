@@ -180,7 +180,6 @@ model Reply {
 }
 
 model Mention {
-  id String @id @default(cuid())
   statusId String
   status   Status @relation(fields: [statusId], references: [id], onDelete: Cascade)
 
@@ -190,7 +189,7 @@ model Mention {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  @@unique([userId, statusId])
+  @@id([userId, statusId])
 }
 
 enum Visibility {
