@@ -7,15 +7,20 @@ import { Prisma, PrismaClient } from "@prisma/client";
 export const userFromActor = async (actor: IActor | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma) => {
     const publicActor = await getApObjectBody(actor) as IActor;
 
-    const updateData = {
+    const updateData: Prisma.UserCreateArgs = {
         data: {
             name: `${publicActor.preferredUsername}`,
             host: new URL(`${publicActor.id}`).host,
             ...(publicActor.publicKey ? {
                 keyPair: {
-                    create: {
-                        publicKey: publicActor.publicKey.publicKeyPem
-                    }
+                    connectOrCreate: {
+                        where: {
+                            publicKey: publicActor.publicKey.publicKeyPem
+                        },
+                        create: {
+                            publicKey: publicActor.publicKey.publicKeyPem
+                        }
+                    },
                 }
             } : {}),
             uri: publicActor.id,
