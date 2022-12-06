@@ -10,18 +10,17 @@ const inbox = signatureGuard(async (req: NextApiRequest, res: NextApiResponse) =
         return sendResError(res, 400);
     }
     console.log("Inbox: "+req.body);
-    // const parsed = (await compact(req.body)) as unknown as IObject;
-    // console.log("Parsed Inbox: "+parsed);
+    const parsed = (await compact(req.body)) as unknown as IObject;
+    console.log("Parsed Inbox: "+parsed);
     
-    // if (isCreate(parsed)) {
-    //     const body = await getApObjectBody(parsed.object);
-    //     if (!Array.isArray(body) && isPost(body)) {
+    if (isCreate(parsed)) {
+        const body = await getApObjectBody(parsed.object);
+        if (!Array.isArray(body) && isPost(body)) {
             
-    //     }
-    // }
+        }
+    }
 
-    // res.json(parsed);
-    res.send("");
+    return res.json(parsed);
 });
 
 export default inbox;
