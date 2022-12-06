@@ -28,7 +28,7 @@ export const statusFromNote = async (doc: IPost | string) => {
     const gotDoc = await getApObjectBody(doc) as IPost;
     if (typeof gotDoc.attributedTo === "string" ) {
         const actor = await getApObjectBody(gotDoc.attributedTo) as IActor;
-        const user = await userFromActor(actor);
+        // const user = await userFromActor(actor);
         const toCc = toCcNormalizer(gotDoc);
         const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
 
@@ -40,7 +40,7 @@ export const statusFromNote = async (doc: IPost | string) => {
             update: {},
             create: {
                 text: `${gotDoc.content}`,
-                userId: user.id,
+                userId: "jkjsadas",
                 uri: gotDoc.id,
                 url: gotDoc.url?.toString(),
                 visibility
