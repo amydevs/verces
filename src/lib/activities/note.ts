@@ -40,14 +40,7 @@ export const statusFromNote = async (doc: IPost | string) => {
                 url: gotDoc.url?.toString(),
                 visibility,
             }
-        };
-
-        const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
-            if (e.startsWith(getIndexUri())) {
-                return getUserStatusFromUri(e).userIndex ?? [];
-            }
-            return [];
-        });
+        };        
 
         // get replies (maybe add a limit to this...)
         if (gotDoc.inReplyTo) {
@@ -63,18 +56,51 @@ export const statusFromNote = async (doc: IPost | string) => {
             };
         }
 
-        return await prisma.status.upsert({
-            where: {
-                uri: gotDoc.id
-            },
-            update: {
-                ...statusData.data,
-                updatedAt: new Date(),
-            },
-            create: {
-                ...statusData.data
+        const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
+            if (e.startsWith(getIndexUri())) {
+                return getUserStatusFromUri(e).userIndex ?? [];
             }
+            return [];
         });
+        
+        const createdStatus = await prisma.$transaction(async (prisma) => {
+            const createdStatus = await prisma.status.upsert({
+                where: {
+                    uri: gotDoc.id
+                },
+                update: {
+                    ...statusData.data,
+                    updatedAt: new Date(),
+                },
+                create: {
+                    ...statusData.data
+                }
+            });
+            await prisma.mention.deleteMany({
+                where: {
+                    user: {
+                        name: {
+                            notIn: mentionedLocalUsersByIndex
+                        }
+                    },
+                    statusId: createdStatus.id
+                }
+            });
+            if (mentionedLocalUsersByIndex.length > 0) {
+                const mentions = await prisma.user.findMany({
+                    where: {
+                        name: {
+                            in: mentionedLocalUsersByIndex
+                        }
+                    }
+                }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
+                await prisma.mention.createMany({
+                    data: mentions
+                });
+            }
+            return createdStatus;
+        });
+        return createdStatus;
     }
 };
 
