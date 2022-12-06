@@ -110,7 +110,6 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                         uri: inReplyTo
                     },
                 }) ?? await statusFromNote(inReplyTo, xprisma);
-                console.log(inReplyTo, repliedToStatus);
                 await xprisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
