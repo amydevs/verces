@@ -23,32 +23,33 @@ export const userFromActor = async (actor: IActor | string) => {
         }
     };
 
-    let tempDbActor = undefined;
-    try {
-        tempDbActor = await prisma.user.update({
-            data: {
-                ...updateData.data,
-                updatedAt: new Date()
-            },
-            where: {
-                uri: typeof actor === "string" ? actor : actor.id,
-            },
-        });
-    }
-    catch {
-        tempDbActor = await prisma.user.findFirst({
-            where: {
-                uri: typeof actor === "string" ? actor : actor.id
-            }
-        });
-    }
+    return prisma.$transaction(async (prisma) => {
+        let tempDbActor = undefined;
+        try {
+            tempDbActor = await prisma.user.update({
+                data: {
+                    ...updateData.data,
+                    updatedAt: new Date()
+                },
+                where: {
+                    uri: typeof actor === "string" ? actor : actor.id,
+                },
+            });
+        }
+        catch {
+            tempDbActor = await prisma.user.findFirst({
+                where: {
+                    uri: typeof actor === "string" ? actor : actor.id
+                }
+            });
+        }
 
-    const dbActor = 
-        tempDbActor ?? 
+        
+        return tempDbActor ?? 
         await (async () => {
             return prisma.user.create({
                 ...updateData
             });
         })();
-    return dbActor;
+    });
 };
