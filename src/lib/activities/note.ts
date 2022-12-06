@@ -1,7 +1,7 @@
 import { IActor, IObject, type IPost } from "./type";
 import { Visibility, type Prisma } from "@prisma/client";
 import { StatusContext } from "./contexts";
-import { getFollowersUri, getIndexUri, getStatusUri, getStatusUrl, getUserUri, PublicStream } from "lib/uris";
+import { getFollowersUri, getIndexUri, getStatusUri, getStatusUrl, getUserStatusFromUri, getUserUri, PublicStream } from "lib/uris";
 import { prisma } from "server/db/client";
 import { userFromActor } from "./actor";
 import { getApObjectBody } from "./utils";
@@ -42,6 +42,14 @@ export const statusFromNote = async (doc: IPost | string) => {
             }
         };
 
+        const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
+            if (e.startsWith(getIndexUri())) {
+                return getUserStatusFromUri(e).userIndex ?? [];
+            }
+            return [];
+        });
+
+        // get replies (maybe add a limit to this...)
         if (gotDoc.inReplyTo) {
             const replyStatusId = await prisma.status.findFirst({
                 where: {
