@@ -12,12 +12,12 @@ export function signatureGuard<T>(
         res: NextApiResponse
     ) => {
         const headerSignature = req.headers.signature;
-        console.log(req.headers);
 
         if (!headerSignature) {
             return sendResError(res, 400, "Invalid Signature");
         }
         const parsed = httpSignature.parseRequest(req);
+        console.log(parsed);
         if (!parsed.keyId) {
             return sendResError(res, 400, "Cannot find public key from user keyId.");
         }
