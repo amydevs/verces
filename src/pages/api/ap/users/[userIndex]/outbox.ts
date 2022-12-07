@@ -9,10 +9,10 @@ import { ActivityStreamsContext, StatusContext } from "lib/activities/contexts";
 import { sendResError } from "lib/errors";
 
 const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { userId, page, min_id, max_id } = req.query;
+    const { userIndex, page, min_id, max_id } = req.query;
     const objPerPage = 20;
 
-    if (typeof userId !== "string") {
+    if (typeof userIndex !== "string") {
         return sendResError(res, 400);
     }
     const foundUser = await prisma.user.findFirst({
@@ -22,7 +22,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             name: true
         },
         where: {
-            name: userId
+            name: userIndex
         }
     });
     if (!foundUser?.keyPair?.publicKey || !foundUser?.name) {

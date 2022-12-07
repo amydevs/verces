@@ -44,7 +44,7 @@ const generateActor = (user: Prisma.UserGetPayload<{ include: { keyPair: true } 
 };
 
 const user = async (req: NextApiRequest, res: NextApiResponse) => {
-    const id = req.query.userId;
+    const id = req.query.userIndex;
     if (typeof id !== "string") {
         return sendResError(res, 400);
     }

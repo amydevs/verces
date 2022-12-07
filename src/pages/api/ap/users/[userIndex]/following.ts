@@ -7,18 +7,18 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import {prisma} from "server/db/client";
 
 const following = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { userId, page } = req.query ;
+    const { userIndex, page } = req.query ;
     const objPerPage = 12;
 
-    if (typeof userId !== "string") {
+    if (typeof userIndex !== "string") {
         return sendResError(res, 400);
     }
-    const followersUri = getFollowersUri(userId);
+    const followersUri = getFollowersUri(userIndex);
 
     const wherePublicFollows = {
         where: {
             user: {
-                name: userId
+                name: userIndex
             },
             type: FollowType.Accepted
         },
@@ -60,11 +60,11 @@ const following = async (req: NextApiRequest, res: NextApiResponse) => {
     
     return res.json({
         "@context": ActivityStreamsContext,
-        id: `${getFollowersUri(userId)}?page=${pageNum}`,
+        id: `${getFollowersUri(userIndex)}?page=${pageNum}`,
         type: "OrderedCollectionPage",
         orderedItems: follows.map(e => getUserUri(e.targetUser.name)),
-        partOf: getFollowersUri(userId),
-        next: `${getFollowersUri(userId)}?page=${pageNum + 1}`,
+        partOf: getFollowersUri(userIndex),
+        next: `${getFollowersUri(userIndex)}?page=${pageNum + 1}`,
     } as IOrderedCollectionPage);
 };
 

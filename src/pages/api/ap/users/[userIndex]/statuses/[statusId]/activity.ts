@@ -7,8 +7,8 @@ import { sendResError } from "lib/errors";
 import { Visibility } from "@prisma/client";
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { userId, statusId } = req.query;
-    if (typeof userId !== "string" || typeof statusId !== "string") {
+    const { userIndex, statusId } = req.query;
+    if (typeof userIndex !== "string" || typeof statusId !== "string") {
         return sendResError(res, 400);
     }
 
@@ -26,7 +26,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
             OR: [
                 {
                     user: {
-                        name: userId
+                        name: userIndex
                     },
                     id: statusId
                 },
@@ -35,7 +35,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
                         some: {
                             statusId,
                             user: {
-                                name: userId
+                                name: userIndex
                             },
                             status: {
                                 visibility: {
@@ -54,7 +54,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const generatedNote = generateNote(foundStatus.user.name, foundStatus, false);
 
-    if (foundStatus.user.name !== userId) {
+    if (foundStatus.user.name !== userIndex) {
         return res.json(generatedNote); // add reblog here
     }
 
