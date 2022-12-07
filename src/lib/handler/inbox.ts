@@ -3,6 +3,7 @@ import { statusFromNote } from "lib/activities/note";
 import { IActor, IObject, isActor, isFollow } from "lib/activities/type";
 import { isCreate, isPost, isUpdate } from "lib/activities/type";
 import { getApObjectBody } from "lib/activities/utils";
+import { sendResError } from "lib/errors";
 import { compact } from "lib/jsonld";
 import { getIndexUri, getUserStatusFromUri } from "lib/uris";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -43,8 +44,8 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
                     }
                 });
             }
-            
         }
+        return sendResError(res, 404);
     }
     return res.status(202).send(202);
 };
