@@ -35,6 +35,7 @@ export const userFromActor = async (actor: IActor | string) => {
             } : {}),
             uri: publicActor.id,
             url: publicActor.url?.toString(),
+            displayName: publicActor.name
         }
     };
 
