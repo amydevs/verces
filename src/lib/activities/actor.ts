@@ -3,7 +3,7 @@ import { getApObjectBody } from "./utils";
 import { prisma } from "server/db/client";
 import type { Prisma, PrismaClient } from "@prisma/client";
 
-export const userFromActor = async (actor: IActor | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma) => {
+export const userFromActor = async (actor: IActor | string) => {
     const publicActor = await getApObjectBody(actor) as IActor;
 
     const updateData: Prisma.UserCreateArgs = {
@@ -27,31 +27,19 @@ export const userFromActor = async (actor: IActor | string, xprisma: PrismaClien
         }
     };
 
-    let tempDbActor = undefined;
-    try {
-        tempDbActor = await xprisma.user.update({
-            data: {
-                ...updateData.data,
-                updatedAt: new Date()
-            },
-            where: {
-                uri: typeof actor === "string" ? actor : actor.id,
-            },
-        });
-    }
-    catch {
-        tempDbActor = await xprisma.user.findFirst({
-            where: {
-                uri: typeof actor === "string" ? actor : actor.id
-            }
-        });
-    }
+
+    const tempDbActor = await prisma.user.upsert({
+        where: {
+            uri: typeof actor === "string" ? actor : actor.id,
+        },
+        update: {
+            ...updateData.data
+        },
+        create: {
+            ...updateData.data
+        }
+    });
 
         
-    return tempDbActor ?? 
-        await (async () => {
-            return xprisma.user.create({
-                ...updateData
-            });
-        })();
+    return tempDbActor;
 };

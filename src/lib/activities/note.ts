@@ -24,11 +24,11 @@ export const statusInclude = {
 
 type StatusSmall = Prisma.StatusGetPayload<typeof statusInclude>
 
-export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient | Prisma.TransactionClient = prisma) => {
+export const statusFromNote = async (doc: IPost | string) => {
     const gotDoc = await getApObjectBody(doc) as IPost;
     if (typeof gotDoc.attributedTo === "string" ) {
         const actor = await getApObjectBody(gotDoc.attributedTo) as IActor;
-        const user = await userFromActor(actor, xprisma);
+        const user = await userFromActor(actor);
         const toCc = toCcNormalizer(gotDoc);
         const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
 
@@ -42,7 +42,7 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
             }
         };
 
-        const createdStatus = await xprisma.status.upsert({
+        const createdStatus = await prisma.status.upsert({
             where: {
                 uri: gotDoc.id
             },
@@ -62,7 +62,7 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
             }
             return [];
         });
-        await xprisma.mention.deleteMany({
+        await prisma.mention.deleteMany({
             where: {
                 user: {
                     name: {
@@ -74,7 +74,7 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
             }
         });
         if (mentionedLocalUsersByIndex.length > 0) {
-            const mentions = await xprisma.user.findMany({
+            const mentions = await prisma.user.findMany({
                 where: {
                     name: {
                         in: mentionedLocalUsersByIndex
@@ -82,7 +82,7 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                     host: ""
                 }
             }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
-            await xprisma.mention.createMany({
+            await prisma.mention.createMany({
                 data: mentions,
                 skipDuplicates: true
             });
@@ -93,7 +93,7 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
             const inReplyTo = gotDoc.inReplyTo;
             const replyingToLocalStatus = getUserStatusFromUri(inReplyTo);
             if (inReplyTo.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
-                await xprisma.reply.upsert({
+                await prisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
                     },
@@ -106,12 +106,12 @@ export const statusFromNote = async (doc: IPost | string, xprisma: PrismaClient 
                 });
             }
             else {
-                const repliedToStatus = await xprisma.status.findFirst({
+                const repliedToStatus = await prisma.status.findFirst({
                     where: {
                         uri: inReplyTo
                     },
-                }) ?? await statusFromNote(inReplyTo, xprisma);
-                await xprisma.reply.upsert({
+                }) ?? await statusFromNote(inReplyTo);
+                await prisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
                     },

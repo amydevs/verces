@@ -16,9 +16,7 @@ const inbox = signatureGuard(async (req: NextApiRequest, res: NextApiResponse) =
     if (isCreate(parsed) || isUpdate(parsed)) {
         const body = await getApObjectBody(parsed.object);
         if (!Array.isArray(body) && isPost(body)) {
-            await prisma.$transaction(async (prisma) => {
-                await statusFromNote(body, prisma);
-            });
+            await statusFromNote(body);
         }
     }
     return res.send("");
