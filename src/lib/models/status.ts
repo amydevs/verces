@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient} from "@prisma/client";
+import type { Prisma, PrismaClient, Status} from "@prisma/client";
 import { Visibility } from "@prisma/client";
 import { getApObjectBody } from "lib/activities/utils";
 import { getFollowersUri, getIndexUri, getStatusUri, getStatusUrl, getUserStatusFromUri, getUserUri, PublicStream } from "lib/uris";
@@ -27,7 +27,7 @@ export const StatusInclude = {
 export default class StatusModel {
     constructor(private readonly prismaStatus: PrismaClient["status"]) {}
 
-    fromNote = async (doc: IPost | string) => {
+    createFromNote = async (doc: IPost | string): Promise<Status> => {
         const noteId = typeof doc === "string" ? doc : doc.id;
         if (noteId?.startsWith(getIndexUri())) {
             const { statusIndex } = getUserStatusFromUri(noteId);
@@ -122,7 +122,7 @@ export default class StatusModel {
                     where: {
                         uri: inReplyTo
                     },
-                }) ?? await this.fromNote(inReplyTo);
+                }) ?? await this.createFromNote(inReplyTo);
                 await prisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
@@ -140,54 +140,58 @@ export default class StatusModel {
         return createdStatus;
     };
 
-    generateNote = async (statusId: string, context = true): Promise<IPost> => {
+    generateNoteFromId = async (statusId: string, context = true): Promise<IPost> => {
         const status = await this.prismaStatus.findFirstOrThrow({
             ...StatusInclude,
             where: {
                 id: statusId
             }
         });
-        const note: IPost = {
-            "id": getStatusUri(status.user.name, status.id),
-            "type": "Note",
-            "published": status.createdAt.toISOString(),
-            "attributedTo": getUserUri(status.user.name),
-            "content": status.text,
-            "url": getStatusUrl(status.user.name, status.id),
-            "to": [],
-            "cc": []
-        };
-        if (context) {
-            note["@context"] = StatusContext;
-        }
-
-        // set replying
-        if (status.replyingTo) {
-            if (status.replyingTo.replyingToStatus.uri) {
-                note.inReplyTo = status.replyingTo.replyingToStatus.url;
-            }
-            else {
-                note.inReplyTo = getStatusUri(status.replyingTo.replyingToUser.name, status.replyingTo.replyingToStatusId);
-            }             
-        }
-
-        // set to and cc
-        const mentions = status.mentions.map(e => {
-            const { uri } = e.user;
-            if (uri?.length) {
-                return uri;
-            }
-            return getUserUri(e.user.name);
-        });
-        const toCc = getToCc(status.visibility, status.user.name, mentions);
-        note.to = toCc.to;
-        note.cc = toCc.cc;
-
-        return note;
+        return await generateNoteFromStatus(status, context);
     };
 }
 
 type ToCc = { to: string[], cc: string[] };
+
+export const generateNoteFromStatus = async (status: Prisma.StatusGetPayload<typeof StatusInclude>, context = true): Promise<IPost> => {
+    const note: IPost = {
+        "id": getStatusUri(status.user.name, status.id),
+        "type": "Note",
+        "published": status.createdAt.toISOString(),
+        "attributedTo": getUserUri(status.user.name),
+        "content": status.text,
+        "url": getStatusUrl(status.user.name, status.id),
+        "to": [],
+        "cc": []
+    };
+    if (context) {
+        note["@context"] = StatusContext;
+    }
+
+    // set replying
+    if (status.replyingTo) {
+        if (status.replyingTo.replyingToStatus.uri) {
+            note.inReplyTo = status.replyingTo.replyingToStatus.url;
+        }
+        else {
+            note.inReplyTo = getStatusUri(status.replyingTo.replyingToUser.name, status.replyingTo.replyingToStatusId);
+        }             
+    }
+
+    // set to and cc
+    const mentions = status.mentions.map(e => {
+        const { uri } = e.user;
+        if (uri?.length) {
+            return uri;
+        }
+        return getUserUri(e.user.name);
+    });
+    const toCc = getToCc(status.visibility, status.user.name, mentions);
+    note.to = toCc.to;
+    note.cc = toCc.cc;
+
+    return note;
+};
 
 export const toCcNormalizer = (doc: IObject) => {
     const flatMapFunc = (e: string | IObject | undefined) => {
