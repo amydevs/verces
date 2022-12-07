@@ -8,6 +8,7 @@ import { getApObjectBody } from "./utils";
 
 export const statusInclude = {
     include: {
+        user: true,
         replyingTo: {
             include: {
                 replyingToStatus: true,
@@ -186,7 +187,8 @@ export const getToCc = (visibility: Visibility, user: string, mentions: string[]
     return note;
 };
 
-export const generateNote = (name: string, status: StatusSmall, context = true): IPost => {
+export const generateNote = (status: StatusSmall, context = true): IPost => {
+    const { name } = status.user;
     const note: IPost = {
         "id": getStatusUri(name, status.id),
         "type": "Note",

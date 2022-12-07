@@ -19,7 +19,6 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const foundStatus = await prisma.status.findFirst({
         include: {
-            user: true,
             ...statusInclude.include
         },
         where: {
@@ -52,7 +51,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
         return sendResError(res, 404);
     }
 
-    const generatedNote = generateNote(foundStatus.user.name, foundStatus, false);
+    const generatedNote = generateNote(foundStatus, false);
 
     if (foundStatus.user.name !== userIndex) {
         return res.json(generatedNote); // add reblog here

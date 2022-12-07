@@ -106,7 +106,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             statuses.length = objPerPage;
         }
         
-        const creates = statuses.map(e => generateCreate(generateNote(foundUser.name, e)));
+        const creates = statuses.map(e => generateCreate(generateNote(e, false)));
         const outbox: IOrderedCollectionPage = {
             "@context": StatusContext,
             type: "OrderedCollectionPage",

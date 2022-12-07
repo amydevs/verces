@@ -2,7 +2,7 @@ import type { Prisma, PrismaClient, Status} from "@prisma/client";
 import { Visibility } from "@prisma/client";
 import { getApObjectBody } from "lib/activities/utils";
 import { getFollowersUri, getIndexUri, getStatusUri, getStatusUrl, getUserStatusFromUri, getUserUri, PublicStream } from "lib/uris";
-import type { IActor, IObject, IPost } from "../activities/type";
+import type { IActor, ICreate, IObject, IPost } from "../activities/type";
 import { prisma } from "server/db/client";
 import User from "./user";
 import { StatusContext } from "lib/activities/contexts";
@@ -191,6 +191,21 @@ export const generateNoteFromStatus = async (status: Prisma.StatusGetPayload<typ
     note.cc = toCc.cc;
 
     return note;
+};
+export const generateCreateFromNote = (note: IPost, context = true): ICreate => {
+    const actor = note.attributedTo;
+    const createMessage: ICreate = {
+        "id": `${note.id}/activity`,
+        "type": "Create",
+        "actor": `${actor}`,
+        "to": note.to,
+        "cc": note.cc,
+        "object": note,
+    };
+    if (context) {
+        createMessage["@context"] = StatusContext;
+    }
+    return createMessage;
 };
 
 export const toCcNormalizer = (doc: IObject) => {

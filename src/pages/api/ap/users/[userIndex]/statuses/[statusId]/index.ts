@@ -10,7 +10,6 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     const foundStatus = await prisma.status.findFirst({
         include: {
-            user: true,
             ...statusInclude.include
         },
         where: {
@@ -23,7 +22,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!foundStatus) {
         return sendResError(res, 404);
     }
-    return res.json(generateNote(foundStatus.user.name, foundStatus));
+    return res.json(generateNote(foundStatus));
 };
 
 export default status;

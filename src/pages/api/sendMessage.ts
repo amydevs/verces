@@ -96,7 +96,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             }
         });
 
-        const message = JSON.stringify(generateCreate(generateNote(user.name, replyStatus, false)));
+        const message = JSON.stringify(generateCreate(generateNote(replyStatus, false)));
         const digestHash = crypto.createHash("sha256").update(message).digest("base64");
         const signer = crypto.createSign("sha256");
         const date = new Date();
