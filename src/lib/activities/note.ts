@@ -25,6 +25,16 @@ export const statusInclude = {
 type StatusSmall = Prisma.StatusGetPayload<typeof statusInclude>
 
 export const statusFromNote = async (doc: IPost | string) => {
+    const noteId = typeof doc === "string" ? doc : doc.id;
+    if (noteId?.startsWith(getIndexUri())) {
+        const { statusIndex } = getUserStatusFromUri(noteId);
+        return await prisma.status.findFirstOrThrow({
+            where: {
+                id: statusIndex
+            }
+        });
+    }
+
     const gotDoc = await getApObjectBody(doc) as IPost;
     if (typeof gotDoc.attributedTo === "string" ) {
         const actor = await getApObjectBody(gotDoc.attributedTo) as IActor;
