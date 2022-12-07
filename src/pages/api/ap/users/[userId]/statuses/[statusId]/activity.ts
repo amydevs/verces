@@ -51,7 +51,14 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!foundStatus) {
         return sendResError(res, 404);
     }
-    return res.json(generateCreate(generateNote(foundStatus.user.name, foundStatus, false)));
+
+    const generatedNote = generateNote(foundStatus.user.name, foundStatus, false);
+
+    if (foundStatus.user.name !== userId) {
+        return res.json(generatedNote); // add reblog here
+    }
+
+    return res.json(generateCreate(generatedNote));
 };
 
 export default status;
