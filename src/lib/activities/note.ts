@@ -36,107 +36,105 @@ export const statusFromNote = async (doc: IPost | string) => {
     }
 
     const gotDoc = await getApObjectBody(doc) as IPost;
-    if (typeof gotDoc.attributedTo === "string" ) {
-        const actor = await getApObjectBody(gotDoc.attributedTo) as IActor;
-        const user = await userFromActor(actor);
-        const toCc = toCcNormalizer(gotDoc);
-        const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
+    const actor = await getApObjectBody(gotDoc.attributedTo as string) as IActor; // force attributedTo to be a string as it will always exist on a note :3
+    const user = await userFromActor(actor);
+    const toCc = toCcNormalizer(gotDoc);
+    const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
 
-        const statusData: Prisma.StatusCreateArgs = {
-            data: {
-                text: `${gotDoc.content}`,
-                userId: user.id,
-                uri: gotDoc.id,
-                url: gotDoc.url?.toString(),
-                visibility,
-            }
-        };
+    const statusData: Prisma.StatusCreateArgs = {
+        data: {
+            text: `${gotDoc.content}`,
+            userId: user.id,
+            uri: gotDoc.id,
+            url: gotDoc.url?.toString(),
+            visibility,
+        }
+    };
 
-        const createdStatus = await prisma.status.upsert({
-            where: {
-                uri: gotDoc.id
-            },
-            update: {
-                ...statusData.data,
-                updatedAt: new Date(),
-            },
-            create: {
-                ...statusData.data
-            }
-        });
+    const createdStatus = await prisma.status.upsert({
+        where: {
+            uri: gotDoc.id
+        },
+        update: {
+            ...statusData.data,
+            updatedAt: new Date(),
+        },
+        create: {
+            ...statusData.data
+        }
+    });
 
-        //mention stuff
-        const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
-            if (e.startsWith(getIndexUri())) {
-                return getUserStatusFromUri(e).userIndex ?? [];
-            }
-            return [];
-        });
-        await prisma.mention.deleteMany({
-            where: {
-                user: {
-                    name: {
-                        notIn: mentionedLocalUsersByIndex
-                    },
-                    host: ""
+    //mention stuff
+    const mentionedLocalUsersByIndex = toCc.to.concat(toCc.cc).flatMap(e => {
+        if (e.startsWith(getIndexUri())) {
+            return getUserStatusFromUri(e).userIndex ?? [];
+        }
+        return [];
+    });
+    await prisma.mention.deleteMany({
+        where: {
+            user: {
+                name: {
+                    notIn: mentionedLocalUsersByIndex
                 },
-                statusId: createdStatus.id
+                host: ""
+            },
+            statusId: createdStatus.id
+        }
+    });
+    if (mentionedLocalUsersByIndex.length > 0) {
+        const mentions = await prisma.user.findMany({
+            where: {
+                name: {
+                    in: mentionedLocalUsersByIndex
+                },
+                host: ""
             }
+        }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
+        await prisma.mention.createMany({
+            data: mentions,
+            skipDuplicates: true
         });
-        if (mentionedLocalUsersByIndex.length > 0) {
-            const mentions = await prisma.user.findMany({
+    }
+
+    // reply stuff
+    if (gotDoc.inReplyTo) {
+        const inReplyTo = gotDoc.inReplyTo;
+        const replyingToLocalStatus = getUserStatusFromUri(inReplyTo);
+        if (inReplyTo.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
+            await prisma.reply.upsert({
                 where: {
-                    name: {
-                        in: mentionedLocalUsersByIndex
-                    },
-                    host: ""
+                    statusId: createdStatus.id
+                },
+                update: {},
+                create: {
+                    status: {connect: {id: createdStatus.id}},
+                    replyingToStatus: {connect: {id: replyingToLocalStatus.statusIndex}},
+                    replyingToUser: {connect: {name_host: {host: "", name: replyingToLocalStatus.userIndex}}}
                 }
-            }).then(e => e.map(e => ({ userId: e.id, statusId: createdStatus.id })));
-            await prisma.mention.createMany({
-                data: mentions,
-                skipDuplicates: true
             });
         }
-
-        // reply stuff
-        if (gotDoc.inReplyTo) {
-            const inReplyTo = gotDoc.inReplyTo;
-            const replyingToLocalStatus = getUserStatusFromUri(inReplyTo);
-            if (inReplyTo.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
-                await prisma.reply.upsert({
-                    where: {
-                        statusId: createdStatus.id
-                    },
-                    update: {},
-                    create: {
-                        status: {connect: {id: createdStatus.id}},
-                        replyingToStatus: {connect: {id: replyingToLocalStatus.statusIndex}},
-                        replyingToUser: {connect: {name_host: {host: "", name: replyingToLocalStatus.userIndex}}}
-                    }
-                });
-            }
-            else {
-                const repliedToStatus = await prisma.status.findFirst({
-                    where: {
-                        uri: inReplyTo
-                    },
-                }) ?? await statusFromNote(inReplyTo);
-                await prisma.reply.upsert({
-                    where: {
-                        statusId: createdStatus.id
-                    },
-                    update: {},
-                    create: {
-                        status: {connect: {id: createdStatus.id}},
-                        replyingToStatus: {connect: {id: repliedToStatus?.id}},
-                        replyingToUser: {connect: {id: repliedToStatus?.userId}}
-                    }
-                });
-            }
+        else {
+            const repliedToStatus = await prisma.status.findFirst({
+                where: {
+                    uri: inReplyTo
+                },
+            }) ?? await statusFromNote(inReplyTo);
+            await prisma.reply.upsert({
+                where: {
+                    statusId: createdStatus.id
+                },
+                update: {},
+                create: {
+                    status: {connect: {id: createdStatus.id}},
+                    replyingToStatus: {connect: {id: repliedToStatus?.id}},
+                    replyingToUser: {connect: {id: repliedToStatus?.userId}}
+                }
+            });
         }
-
-        return createdStatus;
     }
+
+    return createdStatus;
 };
 
 type ToCc = { to: string[], cc: string[] };
