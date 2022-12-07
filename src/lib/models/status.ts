@@ -154,13 +154,14 @@ export default class StatusModel {
 type ToCc = { to: string[], cc: string[] };
 
 export const generateNoteFromStatus = async (status: Prisma.StatusGetPayload<typeof StatusInclude>, context = true): Promise<IPost> => {
+    const { name } = status.user;
     const note: IPost = {
-        "id": getStatusUri(status.user.name, status.id),
+        "id": getStatusUri(name, status.id),
         "type": "Note",
         "published": status.createdAt.toISOString(),
-        "attributedTo": getUserUri(status.user.name),
+        "attributedTo": getUserUri(name),
         "content": status.text,
-        "url": getStatusUrl(status.user.name, status.id),
+        "url": getStatusUrl(name, status.id),
         "to": [],
         "cc": []
     };
