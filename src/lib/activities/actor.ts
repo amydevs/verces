@@ -2,8 +2,19 @@ import type { IActor } from "./type";
 import { getApObjectBody } from "./utils";
 import { prisma } from "server/db/client";
 import type { Prisma, PrismaClient } from "@prisma/client";
+import { getIndexUri, getUserStatusFromUri } from "lib/uris";
 
 export const userFromActor = async (actor: IActor | string) => {
+    const actorId = typeof actor === "string" ? actor : actor.id;
+    if (actorId?.startsWith(getIndexUri())) {
+        const { userIndex } = getUserStatusFromUri(actorId);
+        return prisma.user.findFirstOrThrow({
+            where: {
+                name: userIndex
+            }
+        });
+    }
+
     const publicActor = await getApObjectBody(actor) as IActor;
 
     const updateData: Prisma.UserCreateArgs = {
