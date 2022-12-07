@@ -7,9 +7,9 @@ const userInbox = signatureGuard(async (req: NextApiRequest, res: NextApiRespons
         req.body = JSON.parse(req.body);
     }
     const parsed = await compact(req.body);
-    
+
     console.log(parsed);
-    return res.send("");
+    return res.status(202).send(202);
 });
 
 export default userInbox;
