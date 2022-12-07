@@ -172,7 +172,6 @@ export default class StatusModel {
         }
 
         // set to and cc
-        const followerStream = getFollowersUri(status.user.name);
         const mentions = status.mentions.map(e => {
             const { uri } = e.user;
             if (uri?.length) {
@@ -180,22 +179,10 @@ export default class StatusModel {
             }
             return getUserUri(e.user.name);
         });
-        switch(status.visibility) {
-        case Visibility.Public:
-            note.to = [PublicStream, ...mentions];
-            note.cc = [followerStream];
-            break;
-        case Visibility.Unlisted:
-            note.to = [followerStream, ...mentions];
-            note.cc = [PublicStream];
-            break;
-        case Visibility.FollowOnly:
-            note.to = [followerStream, ...mentions];
-            break;
-        case Visibility.MentionOnly:
-            note.to = mentions;
-            break;
-        }
+        const toCc = getToCc(status.visibility, status.user.name, mentions);
+        note.to = toCc.to;
+        note.cc = toCc.cc;
+
         return note;
     };
 }
