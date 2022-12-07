@@ -48,7 +48,6 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
     if (typeof userIndex !== "string") {
         return sendResError(res, 400);
     }
-    console.log(userIndex);
     const foundUser = await prisma.user.findFirst({
         include: {
             keyPair: true,
@@ -57,7 +56,7 @@ const user = async (req: NextApiRequest, res: NextApiResponse) => {
             name: userIndex
         }
     });
-    if (!foundUser?.name) {
+    if (!foundUser?.keyPair?.publicKey || !foundUser?.name) {
         return sendResError(res, 404);
     }
   
