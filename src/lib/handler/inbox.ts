@@ -1,6 +1,6 @@
 import { userFromActor } from "lib/activities/actor";
 import { statusFromNote } from "lib/activities/note";
-import { IActor, IObject, isActor, isFollow } from "lib/activities/type";
+import { IActor, IObject, isActor, isAnnounce, isFollow } from "lib/activities/type";
 import { isCreate, isPost, isUpdate } from "lib/activities/type";
 import { getApObjectBody } from "lib/activities/utils";
 import { sendResError } from "lib/errors";
@@ -16,6 +16,12 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     const parsed = (await compact(req.body)) as unknown as IObject;
     
     if (isCreate(parsed) || isUpdate(parsed)) {
+        const body = await getApObjectBody(parsed.object);
+        if (!Array.isArray(body) && isPost(body)) {
+            await statusFromNote(body);
+        }
+    }
+    else if (isAnnounce(parsed)) {
         const body = await getApObjectBody(parsed.object);
         if (!Array.isArray(body) && isPost(body)) {
             await statusFromNote(body);
