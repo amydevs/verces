@@ -44,19 +44,20 @@ const generateActor = (user: Prisma.UserGetPayload<{ include: { keyPair: true } 
 };
 
 const user = async (req: NextApiRequest, res: NextApiResponse) => {
-    const id = req.query.userIndex;
-    if (typeof id !== "string") {
+    const { userIndex } = req.query;
+    if (typeof userIndex !== "string") {
         return sendResError(res, 400);
     }
+    console.log(userIndex);
     const foundUser = await prisma.user.findFirst({
         include: {
             keyPair: true,
         },
         where: {
-            name: id
+            name: userIndex
         }
     });
-    if (!foundUser?.keyPair?.publicKey || !foundUser?.name) {
+    if (!foundUser?.name) {
         return sendResError(res, 404);
     }
   
