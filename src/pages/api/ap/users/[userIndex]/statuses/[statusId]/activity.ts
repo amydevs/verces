@@ -1,10 +1,9 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateCreate } from "lib/activities/create";
-import { generateNote, statusInclude } from "lib/activities/note";
 import { prisma } from "server/db/client";
 import { sendResError } from "lib/errors";
 import { Visibility } from "@prisma/client";
+import { generateCreateFromNote, generateNoteFromStatus, StatusInclude } from "lib/models/status";
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userIndex, statusId } = req.query;
@@ -19,7 +18,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const foundStatus = await prisma.status.findFirst({
         include: {
-            ...statusInclude.include
+            ...StatusInclude.include
         },
         where: {
             OR: [
@@ -51,13 +50,13 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
         return sendResError(res, 404);
     }
 
-    const generatedNote = generateNote(foundStatus, false);
+    const generatedNote = generateNoteFromStatus(foundStatus, false);
 
     if (foundStatus.user.name !== userIndex) {
         return res.json(generatedNote); // add reblog here
     }
 
-    return res.json(generateCreate(generatedNote));
+    return res.json(generateCreateFromNote(generatedNote));
 };
 
 export default status;

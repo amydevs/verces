@@ -1,4 +1,3 @@
-import { statusFromNote } from "lib/activities/note";
 import { type IObject, isCreate, isPost, isUpdate } from "lib/activities/type";
 import { getApObjectBody } from "lib/activities/utils";
 import { sendResError } from "lib/errors";

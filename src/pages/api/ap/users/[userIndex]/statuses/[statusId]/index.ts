@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateNote, statusInclude } from "lib/activities/note";
 import { prisma } from "server/db/client";
 import { sendResError } from "lib/errors";
+import { generateNoteFromStatus, StatusInclude } from "lib/models/status";
 
 const status = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userIndex, statusId } = req.query;
@@ -10,7 +10,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     const foundStatus = await prisma.status.findFirst({
         include: {
-            ...statusInclude.include
+            ...StatusInclude.include
         },
         where: {
             user: {
@@ -22,7 +22,7 @@ const status = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!foundStatus) {
         return sendResError(res, 404);
     }
-    return res.json(generateNote(foundStatus));
+    return res.json(generateNoteFromStatus(foundStatus));
 };
 
 export default status;

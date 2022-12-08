@@ -2,11 +2,10 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "server/db/client";
 import { type IOrderedCollectionPage } from "lib/activities/type";
 import { Prisma, Visibility } from "@prisma/client";
-import { generateCreate } from "lib/activities/create";
-import { generateNote, statusInclude } from "lib/activities/note";
 import { getOutboxUri } from "lib/uris";
 import { ActivityStreamsContext, StatusContext } from "lib/activities/contexts";
 import { sendResError } from "lib/errors";
+import { generateCreateFromNote, generateNoteFromStatus, StatusInclude } from "lib/models/status";
 
 const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userIndex, page, min_id, max_id } = req.query;
@@ -94,7 +93,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
                 createdAt: "desc"
             },
             take: objPerPage,
-            ...statusInclude,
+            ...StatusInclude,
             ...page_options
         });
         if (min_id === "0") {
@@ -106,7 +105,7 @@ const outbox = async (req: NextApiRequest, res: NextApiResponse) => {
             statuses.length = objPerPage;
         }
         
-        const creates = statuses.map(e => generateCreate(generateNote(e, false)));
+        const creates = statuses.map(e => generateCreateFromNote(generateNoteFromStatus(e, false)));
         const outbox: IOrderedCollectionPage = {
             "@context": StatusContext,
             type: "OrderedCollectionPage",

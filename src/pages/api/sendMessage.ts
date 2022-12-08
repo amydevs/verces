@@ -1,11 +1,10 @@
 import { env } from "env/server.mjs";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { generateCreate } from "lib/activities/create";
-import { generateNote, statusInclude } from "lib/activities/note";
 import { getServerAuthSession } from "server/common/get-server-auth-session";
 
 import crypto from "crypto";
 import { prisma } from "../../server/db/client";
+import { generateCreateFromNote, generateNoteFromStatus, StatusInclude } from "lib/models/status";
 
 const examples = async (req: NextApiRequest, res: NextApiResponse) => {
     
@@ -75,7 +74,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             }
         });
         const replyStatus = await prisma.status.create({
-            ...statusInclude,
+            ...StatusInclude,
             data: {
                 text: "<p>Hello world</p>",
                 userId: user.id,
@@ -96,7 +95,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
             }
         });
 
-        const message = JSON.stringify(generateCreate(generateNote(replyStatus, false)));
+        const message = JSON.stringify(generateCreateFromNote(generateNoteFromStatus(replyStatus, false)));
         const digestHash = crypto.createHash("sha256").update(message).digest("base64");
         const signer = crypto.createSign("sha256");
         const date = new Date();

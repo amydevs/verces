@@ -152,7 +152,7 @@ export default class StatusModel {
     };
 }
 
-export const generateNoteFromStatus = async (status: Prisma.StatusGetPayload<typeof StatusInclude>, context = true): Promise<IPost> => {
+export const generateNoteFromStatus = (status: Prisma.StatusGetPayload<typeof StatusInclude>, context = true): IPost => {
     const { name } = status.user;
     const note: IPost = {
         "id": getStatusUri(name, status.id),

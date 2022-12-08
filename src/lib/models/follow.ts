@@ -1,8 +1,9 @@
 import { PrismaClient, Visibility } from "@prisma/client";
-import { userFromActor } from "lib/activities/actor";
+import UserModel from "./user";
 import { IFollow, IObject, isActor } from "lib/activities/type";
 import { getApObjectBody } from "lib/activities/utils";
 import { getFollowersUri, getIndexUri, getUserStatusFromUri, PublicStream } from "lib/uris";
+import { prisma } from "server/db/client";
 
 export default class FollowModel {
     constructor(private readonly prismaFollow: PrismaClient["follow"]) {}
@@ -12,7 +13,7 @@ export default class FollowModel {
         if (targetActorUri?.startsWith(getIndexUri())) {
             const body = await getApObjectBody(gotFollow.object) as IObject;
             if (isActor(body)) {
-                const fromUser = await userFromActor(body);
+                const fromUser = await new UserModel(prisma.user).fromActor(body);
                 const { userIndex } = getUserStatusFromUri(targetActorUri);
                 return await this.prismaFollow.create({
                     data: {
