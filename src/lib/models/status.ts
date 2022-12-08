@@ -104,7 +104,6 @@ export default class StatusModel {
         // reply stuff
         const inReplyToId = typeof gotDoc.inReplyTo === "string" ? gotDoc.inReplyTo : gotDoc.inReplyTo?.id;
         if (inReplyToId) {
-            console.log("ReplyId: " + inReplyToId);
             const replyingToLocalStatus = getUserStatusFromUri(inReplyToId);
             if (inReplyToId.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
                 await prisma.reply.upsert({
@@ -124,7 +123,7 @@ export default class StatusModel {
                     where: {
                         uri: inReplyToId
                     },
-                }) ?? await this.createFromNote(inReplyToId);
+                }) ?? await this.createFromNote(await getApObjectBody(inReplyToId) as IPost);
                 await prisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
