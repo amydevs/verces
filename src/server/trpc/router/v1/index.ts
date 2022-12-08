@@ -3,6 +3,7 @@ import { router, publicProcedure, protectedProcedure } from "../../trpc";
 import { version } from "../../../../../package.json";
 import { z } from "zod";
 import { appsRouter } from "./apps";
+import { statusesRouter } from "./statuses";
 
 export const v1Router = router({
     instance: publicProcedure
@@ -24,5 +25,6 @@ export const v1Router = router({
                 description: "Serverless Activitypub"
             };
         }),
-    apps: appsRouter
+    apps: appsRouter,
+    statuses: statusesRouter
 });
