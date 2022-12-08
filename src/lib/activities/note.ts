@@ -161,9 +161,9 @@ export const getVisibility = ({ to, cc }: ToCc, followersUri: string): Visibilit
         return Visibility.Unlisted;
     }
     if (cc.includes(followersUri) || to.includes(followersUri)) {
-        return Visibility.FollowOnly;
+        return Visibility.Private;
     }
-    return Visibility.MentionOnly;
+    return Visibility.Direct;
 };
 export const getToCc = (visibility: Visibility, user: string, mentions: string[]) => {
     const note: ToCc = { to: [], cc: [] };
@@ -177,10 +177,10 @@ export const getToCc = (visibility: Visibility, user: string, mentions: string[]
         note.to = [followerStream, ...mentions];
         note.cc = [PublicStream];
         break;
-    case Visibility.FollowOnly:
+    case Visibility.Private:
         note.to = [followerStream, ...mentions];
         break;
-    case Visibility.MentionOnly:
+    case Visibility.Direct:
         note.to = mentions;
         break;
     }
@@ -231,10 +231,10 @@ export const generateNote = (status: StatusSmall, context = true): IPost => {
         note.to = [followerStream, ...mentions];
         note.cc = [PublicStream];
         break;
-    case Visibility.FollowOnly:
+    case Visibility.Private:
         note.to = [followerStream, ...mentions];
         break;
-    case Visibility.MentionOnly:
+    case Visibility.Direct:
         note.to = mentions;
         break;
     }

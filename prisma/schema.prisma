@@ -210,8 +210,8 @@ model ReStatus {
 enum Visibility {
   Public
   Unlisted
-  FollowOnly
-  MentionOnly
+  Private // Followers Only + Mentions
+  Direct // Mentions Only
 }
 
 model Follow {
