@@ -33,15 +33,9 @@ export const authOptions: NextAuthOptions = {
         }
     },
     events: {
-        async signIn({user}) {
-            await giveKeysToUserIfNone(user.id);
-        },
         async createUser({user}) {
             await giveKeysToUserIfNone(user.id);
         },
-        async linkAccount({user}) {
-            await giveKeysToUserIfNone(user.id);
-        }
     },
     // Configure one or more authentication providers
     adapter: PrismaAdapter(prisma),

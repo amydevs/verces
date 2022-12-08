@@ -137,7 +137,7 @@ model KeyPair {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   publicKey  String @unique
-  privateKey String? @unique
+  privateKey String?
 }
 
 model VerificationToken {
