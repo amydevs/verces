@@ -103,7 +103,7 @@ export default class StatusModel {
     
         // reply stuff
         const inReplyToId = typeof gotDoc.inReplyTo === "string" ? gotDoc.inReplyTo : gotDoc.inReplyTo?.id;
-        if (inReplyToId) {
+        if (inReplyToId && inReplyToId !== null) {
             console.log("ReplyId: " + inReplyToId);
             const replyingToLocalStatus = getUserStatusFromUri(inReplyToId);
             if (inReplyToId.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
