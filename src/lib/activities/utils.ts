@@ -40,8 +40,10 @@ export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObj
     const ftch = await fetch(doc, {
         method: "GET",
         headers: {
+            "Host": new URL(doc).host,
             "Accept": ActivityContentType,
         },
+        
     });
     const status = ftch.status;
     const json = await ftch.json();
