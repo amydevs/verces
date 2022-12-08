@@ -8,6 +8,20 @@ import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 import { generateKeyPair } from "lib/signature";
 
+const giveKeysToUserIfNone = async (userId: string) => {
+    const keys = await generateKeyPair();
+    return await prisma.keyPair.upsert({
+        where: {
+            userId
+        },
+        update: {},
+        create: {
+            userId,
+            ...keys
+        }
+    });
+};
+
 export const authOptions: NextAuthOptions = {
     // Include user.id on session
     callbacks: {
@@ -20,18 +34,14 @@ export const authOptions: NextAuthOptions = {
     },
     events: {
         async signIn({user}) {
-            const keys = await generateKeyPair();
-            await prisma.keyPair.upsert({
-                where: {
-                    userId: user.id
-                },
-                update: {},
-                create: {
-                    userId: user.id,
-                    ...keys
-                }
-            });
+            giveKeysToUserIfNone(user.id);
         },
+        async createUser({user}) {
+            giveKeysToUserIfNone(user.id);
+        },
+        async linkAccount({user}) {
+            giveKeysToUserIfNone(user.id);
+        }
     },
     // Configure one or more authentication providers
     adapter: PrismaAdapter(prisma),
