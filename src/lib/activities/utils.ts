@@ -45,7 +45,7 @@ export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObj
     });
     const json = await ftch.json();
     if (Math.floor((ftch.status / 100) % 10) !== 2) {
-        throw new Error(ftch.status.toString(), {
+        throw new Error(doc + " : " + ftch.status.toString(), {
             cause: JSON.stringify(json)
         });
     }
