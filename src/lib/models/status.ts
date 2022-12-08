@@ -40,7 +40,7 @@ export default class StatusModel {
         }
         
         const gotDoc = await getApObjectBody(doc) as IPost;
-        console.log(JSON.stringify(gotDoc));
+        if (!gotDoc.attributedTo) console.log(JSON.stringify(gotDoc));
         const actor = await getApObjectBody(gotDoc.attributedTo as string) as IActor; // force attributedTo to be a string as it will always exist on a note :3
         const user = await new User(prisma.user).fromActor(actor);
         const toCc = VisibilityModel.toCcNormalizer(gotDoc);
@@ -120,7 +120,6 @@ export default class StatusModel {
                 });
             }
             else {
-                console.log("Getting reply status");
                 const repliedToStatus = await this.prismaStatus.findFirst({
                     where: {
                         uri: inReplyToId
