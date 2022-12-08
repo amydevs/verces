@@ -37,12 +37,17 @@ export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObj
     if (typeof doc === "object") {
         return doc;
     }
-    console.log(doc);
     const ftch = await fetch(doc, {
         method: "GET",
         headers: {
             "Accept": ActivityContentType,
         },
-    }).then(e => e.json());
-    return ftch as IObject;
+    });
+    const json = await ftch.json();
+    if (Math.floor((ftch.status / 100) % 10) !== 2) {
+        throw new Error(ftch.status.toString(), {
+            cause: JSON.stringify(json)
+        });
+    }
+    return await ftch.json() as IObject;
 };
