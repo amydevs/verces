@@ -125,7 +125,7 @@ export default class StatusModel {
                     where: {
                         uri: inReplyToId
                     },
-                }) ?? await this.createFromNote(doc);
+                }) ?? await this.createFromNote(inReplyToId);
                 await prisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
