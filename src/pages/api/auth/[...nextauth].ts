@@ -34,13 +34,13 @@ export const authOptions: NextAuthOptions = {
     },
     events: {
         async signIn({user}) {
-            giveKeysToUserIfNone(user.id);
+            await giveKeysToUserIfNone(user.id);
         },
         async createUser({user}) {
-            giveKeysToUserIfNone(user.id);
+            await giveKeysToUserIfNone(user.id);
         },
         async linkAccount({user}) {
-            giveKeysToUserIfNone(user.id);
+            await giveKeysToUserIfNone(user.id);
         }
     },
     // Configure one or more authentication providers
