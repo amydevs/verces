@@ -39,9 +39,10 @@ export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObj
     }
     console.log(doc);
     const ftch = await fetch(doc, {
+        method: "GET",
         headers: {
             "Accept": ActivityContentType,
-        }
+        },
     }).then(e => e.json());
     return ftch as IObject;
 };
