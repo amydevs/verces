@@ -119,11 +119,12 @@ export default class StatusModel {
                 });
             }
             else {
+                console.log("Getting reply status");
                 const repliedToStatus = await this.prismaStatus.findFirst({
                     where: {
                         uri: inReplyToId
                     },
-                }) ?? await this.createFromNote(await getApObjectBody(inReplyToId) as IPost);
+                }) ?? await this.createFromNote(await getApObjectBody(doc));
                 await prisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
