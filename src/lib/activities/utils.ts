@@ -50,5 +50,5 @@ export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObj
             cause: JSON.stringify(json)
         });
     }
-    return await ftch.json() as IObject;
+    return json as IObject;
 };
