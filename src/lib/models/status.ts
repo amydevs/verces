@@ -38,8 +38,11 @@ export default class StatusModel {
                 }
             });
         }
-    
+        
+        console.log(doc);
+
         const gotDoc = await getApObjectBody(doc) as IPost;
+        console.log(gotDoc);
         const actor = await getApObjectBody(gotDoc.attributedTo as string) as IActor; // force attributedTo to be a string as it will always exist on a note :3
         const user = await new User(prisma.user).fromActor(actor);
         const toCc = VisibilityModel.toCcNormalizer(gotDoc);
@@ -104,6 +107,7 @@ export default class StatusModel {
         // reply stuff
         if (gotDoc.inReplyTo) {
             const inReplyTo = gotDoc.inReplyTo;
+            console.log(inReplyTo);
             const replyingToLocalStatus = getUserStatusFromUri(inReplyTo);
             if (inReplyTo.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
                 await prisma.reply.upsert({
@@ -131,8 +135,8 @@ export default class StatusModel {
                     update: {},
                     create: {
                         status: {connect: {id: createdStatus.id}},
-                        replyingToStatus: {connect: {id: repliedToStatus?.id}},
-                        replyingToUser: {connect: {id: repliedToStatus?.userId}}
+                        replyingToStatus: {connect: {id: repliedToStatus.id}},
+                        replyingToUser: {connect: {id: repliedToStatus.userId}}
                     }
                 });
             }
