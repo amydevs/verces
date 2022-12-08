@@ -24,28 +24,31 @@ export const generatePostHeaders = (body: string, userIndex: string, privateKey:
     return headers;
 };
 
-export const getApObjectBody = async (doc: ApObject): Promise<IObject | IObject[]> => {
+export const getApObjectBody = async (doc: ApObject, fetchOptions?: RequestInit): Promise<IObject | IObject[]> => {
     if (Array.isArray(doc)) {
         return Promise.all(doc.map(e => getSingleApObjectBody(e)));
     }
     else {
-        return getSingleApObjectBody(doc);
+        return getSingleApObjectBody(doc, fetchOptions);
     }
 };
 
-export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObject> => {
+export const getSingleApObjectBody = async (doc: IObject | string, fetchOptions?: RequestInit): Promise<IObject> => {
     if (typeof doc === "object") {
         return doc;
     }
     console.log(doc);
-    const ftch = await fetch(doc, {
+    const realFetchOptions: RequestInit = {
         method: "GET",
         headers: {
             "Host": new URL(doc).host,
             "Accept": ActivityContentType,
         },
-        
-    });
+    };
+    if (fetchOptions) {
+        Object.assign(realFetchOptions, fetchOptions);
+    }
+    const ftch = await fetch(doc, realFetchOptions);
     const status = ftch.status;
     const json = await ftch.json();
     if (Math.floor((status / 100) % 10) !== 2 || json["error"]) {
