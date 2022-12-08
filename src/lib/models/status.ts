@@ -102,11 +102,11 @@ export default class StatusModel {
         }
     
         // reply stuff
-        if (gotDoc.inReplyTo) {
-            const inReplyTo = gotDoc.inReplyTo;
-            console.log("ReplyId: " + inReplyTo.id ?? inReplyTo);
-            const replyingToLocalStatus = getUserStatusFromUri(inReplyTo);
-            if (inReplyTo.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
+        const inReplyToId = typeof gotDoc.inReplyTo === "string" ? gotDoc.inReplyTo : gotDoc.inReplyTo?.id;
+        if (inReplyToId) {
+            console.log("ReplyId: " + inReplyToId);
+            const replyingToLocalStatus = getUserStatusFromUri(inReplyToId);
+            if (inReplyToId.startsWith(getIndexUri()) && replyingToLocalStatus.statusIndex && replyingToLocalStatus.userIndex) {
                 await prisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
@@ -122,9 +122,9 @@ export default class StatusModel {
             else {
                 const repliedToStatus = await this.prismaStatus.findFirst({
                     where: {
-                        uri: inReplyTo
+                        uri: inReplyToId
                     },
-                }) ?? await this.createFromNote(inReplyTo);
+                }) ?? await this.createFromNote(inReplyToId);
                 await prisma.reply.upsert({
                     where: {
                         statusId: createdStatus.id
@@ -171,8 +171,9 @@ export const generateNoteFromStatus = (status: Prisma.StatusGetPayload<typeof St
 
     // set replying
     if (status.replyingTo) {
-        if (status.replyingTo.replyingToStatus.uri) {
-            note.inReplyTo = status.replyingTo.replyingToStatus.url;
+        const replyingToUri = status.replyingTo.replyingToStatus.uri;
+        if (replyingToUri) {
+            note.inReplyTo = replyingToUri;
         }
         else {
             note.inReplyTo = getStatusUri(status.replyingTo.replyingToUser.name, status.replyingTo.replyingToStatusId);

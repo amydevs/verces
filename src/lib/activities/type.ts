@@ -12,7 +12,7 @@ export interface IObject {
 	to?: ApObject;
 	attributedTo?: ApObject;
 	attachment?: any[];
-	inReplyTo?: any;
+	inReplyTo?: IPost | string;
 	replies?: ICollection;
 	content?: string;
 	name?: string;
