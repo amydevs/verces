@@ -6,6 +6,7 @@ import type { IActor, ICreate, IObject, IPost } from "../activities/type";
 import { prisma } from "server/db/client";
 import User from "./user";
 import { StatusContext } from "lib/activities/contexts";
+import VisibilityModel from "./visibility";
 
 export const StatusInclude = {
     include: {
@@ -41,8 +42,8 @@ export default class StatusModel {
         const gotDoc = await getApObjectBody(doc) as IPost;
         const actor = await getApObjectBody(gotDoc.attributedTo as string) as IActor; // force attributedTo to be a string as it will always exist on a note :3
         const user = await new User(prisma.user).fromActor(actor);
-        const toCc = toCcNormalizer(gotDoc);
-        const visibility = getVisibility(toCc, actor.followers?.toString() ?? "");
+        const toCc = VisibilityModel.toCcNormalizer(gotDoc);
+        const visibility = VisibilityModel.getVisibility(toCc, actor.followers?.toString() ?? "");
     
         const statusData: Prisma.StatusCreateArgs = {
             data: {
@@ -151,8 +152,6 @@ export default class StatusModel {
     };
 }
 
-type ToCc = { to: string[], cc: string[] };
-
 export const generateNoteFromStatus = async (status: Prisma.StatusGetPayload<typeof StatusInclude>, context = true): Promise<IPost> => {
     const { name } = status.user;
     const note: IPost = {
@@ -187,7 +186,7 @@ export const generateNoteFromStatus = async (status: Prisma.StatusGetPayload<typ
         }
         return getUserUri(e.user.name);
     });
-    const toCc = getToCc(status.visibility, status.user.name, mentions);
+    const toCc = new VisibilityModel(status.visibility).getToCc(status.user.name, mentions);
     note.to = toCc.to;
     note.cc = toCc.cc;
 
@@ -209,49 +208,3 @@ export const generateCreateFromNote = (note: IPost, context = true): ICreate => 
     return createMessage;
 };
 
-export const toCcNormalizer = (doc: IObject) => {
-    const flatMapFunc = (e: string | IObject | undefined) => {
-        if (typeof e === "object") {
-            return e.id ? e.id : [];
-        }
-        return e ?? [];
-    };
-    return { 
-        to: Array.isArray(doc.to) ? doc.to.flatMap(flatMapFunc) : [doc.to].flatMap(flatMapFunc),
-        cc: Array.isArray(doc.cc) ? doc.cc.flatMap(flatMapFunc) : [doc.cc].flatMap(flatMapFunc)
-    };
-
-};
-export const getVisibility = ({ to, cc }: ToCc, followersUri: string): Visibility => {
-    if (to.includes(PublicStream)) {
-        return Visibility.Public;
-    }
-    if (cc.includes(PublicStream)) {
-        return Visibility.Unlisted;
-    }
-    if (cc.includes(followersUri) || to.includes(followersUri)) {
-        return Visibility.Private;
-    }
-    return Visibility.Direct;
-};
-export const getToCc = (visibility: Visibility, user: string, mentions: string[]) => {
-    const note: ToCc = { to: [], cc: [] };
-    const followerStream = getFollowersUri(user);
-    switch(visibility) {
-    case Visibility.Public:
-        note.to = [PublicStream, ...mentions];
-        note.cc = [followerStream];
-        break;
-    case Visibility.Unlisted:
-        note.to = [followerStream, ...mentions];
-        note.cc = [PublicStream];
-        break;
-    case Visibility.Private:
-        note.to = [followerStream, ...mentions];
-        break;
-    case Visibility.Direct:
-        note.to = mentions;
-        break;
-    }
-    return note;
-};

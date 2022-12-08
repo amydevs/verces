@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Visibility } from "@prisma/client";
 import { userFromActor } from "lib/activities/actor";
 import { IFollow, IObject, isActor } from "lib/activities/type";
 import { getApObjectBody } from "lib/activities/utils";
-import { getIndexUri, getUserStatusFromUri } from "lib/uris";
+import { getFollowersUri, getIndexUri, getUserStatusFromUri, PublicStream } from "lib/uris";
 
 export default class FollowModel {
     constructor(private readonly prismaFollow: PrismaClient["follow"]) {}
