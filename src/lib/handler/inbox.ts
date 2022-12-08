@@ -1,4 +1,5 @@
 import { userFromActor } from "lib/activities/actor";
+import { fromFollow } from "lib/activities/follow";
 import { statusFromNote } from "lib/activities/note";
 import { IActor, IObject, isActor, isAnnounce, isFollow } from "lib/activities/type";
 import { isCreate, isPost, isUpdate } from "lib/activities/type";
@@ -28,29 +29,7 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
         }
     }
     else if (isFollow(parsed)) {
-        const targetActorUri = typeof parsed.actor === "string" ? parsed.actor : parsed.actor.id;
-        if (targetActorUri?.startsWith(getIndexUri())) {
-            const body = await getApObjectBody(parsed.object) as IObject;
-            if (isActor(body)) {
-                const fromUser = await userFromActor(body);
-                const { userIndex } = getUserStatusFromUri(targetActorUri);
-                await prisma.follow.create({
-                    data: {
-                        type: "Accepted",
-                        targetUser: {
-                            connect: {
-                                name: userIndex
-                            }
-                        },
-                        user: {
-                            connect: {
-                                id: fromUser.id
-                            }
-                        }
-                    }
-                });
-            }
-        }
+        await fromFollow(parsed);
         return sendResError(res, 404);
     }
     return res.status(202).send(202);
