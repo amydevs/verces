@@ -1,8 +1,10 @@
-import { PrismaClient, Visibility } from "@prisma/client";
+import type { PrismaClient} from "@prisma/client";
+import { Visibility } from "@prisma/client";
 import UserModel from "./user";
-import { IFollow, IObject, isActor } from "lib/activities/type";
-import { getApObjectBody } from "lib/activities/utils";
-import { getFollowersUri, getIndexUri, getUserStatusFromUri, PublicStream } from "lib/uris";
+import type { IAccept, IActor, IFollow} from "lib/activities/type";
+import { IObject, isActor } from "lib/activities/type";
+import { generatePostHeaders, getApObjectBody } from "lib/activities/utils";
+import { getFollowersUri, getIndexUri, getUserStatusFromUri, getUserUri, PublicStream } from "lib/uris";
 import { prisma } from "server/db/client";
 
 export default class FollowModel {
@@ -11,11 +13,19 @@ export default class FollowModel {
         const gotFollow = getApObjectBody(follow) as unknown as IFollow;
         const targetActorUri = typeof gotFollow.actor === "string" ? gotFollow.actor : gotFollow.actor.id;
         if (targetActorUri?.startsWith(getIndexUri())) {
-            const body = await getApObjectBody(gotFollow.object) as IObject;
+            const body = await getApObjectBody(gotFollow.object) as IActor;
             if (isActor(body)) {
                 const fromUser = await new UserModel(prisma.user).fromActor(body);
                 const { userIndex } = getUserStatusFromUri(targetActorUri);
-                return await this.prismaFollow.create({
+                const follow = await this.prismaFollow.create({
+                    include: {
+                        targetUser: {
+                            include: {
+                                keyPair: true
+                            }
+                        },
+                        user: true,
+                    },
                     data: {
                         type: "Accepted",
                         targetUser: {
@@ -30,6 +40,20 @@ export default class FollowModel {
                         }
                     }
                 });
+                const acceptFollowRequest: IAccept = {
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    id: getFollowersUri(`${userIndex}`),
+                    type: "Accept",
+                    actor: getUserUri(`${userIndex}`),
+                    object: gotFollow
+                };
+                const message = JSON.stringify(acceptFollowRequest);
+                await fetch(body.inbox, {
+                    method: "POST",
+                    headers: generatePostHeaders(message, follow.targetUser.name, follow.targetUser.keyPair?.privateKey as string, body.inbox),
+                    body: message,
+                });
+                return follow;
             }
         }
         throw new Error("Target user is not a user that is in this instance.");
