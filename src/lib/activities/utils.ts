@@ -37,6 +37,7 @@ export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObj
     if (typeof doc === "object") {
         return doc;
     }
+    console.log(doc);
     const ftch = await fetch(doc, {
         method: "GET",
         headers: {

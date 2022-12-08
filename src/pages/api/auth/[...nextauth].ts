@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
         }
     },
     events: {
-        async createUser({user}) {
+        async signIn({user}) {
             const keys = await generateKeyPair();
             await prisma.keyPair.upsert({
                 where: {
