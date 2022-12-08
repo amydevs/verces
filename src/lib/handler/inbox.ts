@@ -6,6 +6,7 @@ import { isCreate, isPost, isUpdate } from "lib/activities/type";
 import { getApObjectBody } from "lib/activities/utils";
 import { sendResError } from "lib/errors";
 import { compact } from "lib/jsonld";
+import FollowModel from "lib/models/follow";
 import { getIndexUri, getUserStatusFromUri } from "lib/uris";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "server/db/client";
@@ -29,7 +30,7 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
         }
     }
     else if (isFollow(parsed)) {
-        await fromFollow(parsed);
+        await new FollowModel(prisma.follow).fromFollow(parsed);
         return sendResError(res, 404);
     }
     return res.status(202).send(202);

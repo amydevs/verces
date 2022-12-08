@@ -4,7 +4,7 @@ import { IFollow, IObject, isActor } from "lib/activities/type";
 import { getApObjectBody } from "lib/activities/utils";
 import { getIndexUri, getUserStatusFromUri } from "lib/uris";
 
-export default class StatusModel {
+export default class FollowModel {
     constructor(private readonly prismaFollow: PrismaClient["follow"]) {}
     fromFollow = async (follow: IFollow | string) => {
         const gotFollow = getApObjectBody(follow) as unknown as IFollow;
