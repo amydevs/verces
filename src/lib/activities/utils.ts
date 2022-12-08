@@ -43,9 +43,10 @@ export const getSingleApObjectBody = async (doc: IObject | string): Promise<IObj
             "Accept": ActivityContentType,
         },
     });
+    const status = ftch.status;
     const json = await ftch.json();
-    if (Math.floor((ftch.status / 100) % 10) !== 2) {
-        throw new Error(doc + " : " + ftch.status.toString(), {
+    if (Math.floor((status / 100) % 10) !== 2 || json["error"]) {
+        throw new Error(doc + " : " + status.toString(), {
             cause: JSON.stringify(json)
         });
     }
