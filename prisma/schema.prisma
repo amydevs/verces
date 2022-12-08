@@ -100,7 +100,7 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  name          String    @unique
+  name          String    @unique // For all intents and purposes at the moment, this IS the username and the userIndex. We'll deal with the problems later :3
   email         String?   @unique
   emailVerified DateTime?
   image         String?
@@ -110,7 +110,7 @@ model User {
   accessTokens      OauthAccessToken[]
   accessGrants      OauthAccessGrant[]
 
-  displayName String?
+  displayName String? // Display Name
 
   host String @default("") // Empty if local instance to allow for unique check.
   uri String? @unique // Unique on nullable fields don't error when the repetitive value is Null.
