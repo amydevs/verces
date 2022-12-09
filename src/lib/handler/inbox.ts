@@ -29,7 +29,6 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     }
     else if (isFollow(parsed)) {
         await new FollowModel(prisma.follow).fromFollow(parsed);
-        return sendResError(res, 404);
     }
     return res.status(202).send(202);
 };
