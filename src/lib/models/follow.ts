@@ -49,11 +49,13 @@ export default class FollowModel {
                     object: gotFollow
                 };
                 const message = JSON.stringify(acceptFollowRequest);
-                await fetch(body.inbox, {
-                    method: "POST",
-                    headers: generatePostHeaders(message, follow.targetUser.name, follow.targetUser.keyPair?.privateKey as string, body.inbox),
-                    body: message,
-                });
+                console.log(
+                    await fetch(body.inbox, {
+                        method: "POST",
+                        headers: generatePostHeaders(message, follow.targetUser.name, follow.targetUser.keyPair?.privateKey as string, body.inbox),
+                        body: message,
+                    }).then(e => e.text())
+                );
                 return follow;
             }
         }
