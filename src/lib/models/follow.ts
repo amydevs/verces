@@ -43,7 +43,7 @@ export default class FollowModel {
                 });
                 const acceptFollowRequest: IAccept = {
                     "@context": ActivityStreamsContext,
-                    id: getFollowersUri(`${userIndex}`),
+                    id: new URL(follow.id, getIndexUri()).toString(),
                     type: "Accept",
                     actor: getUserUri(`${userIndex}`),
                     object: gotFollow
