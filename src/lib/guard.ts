@@ -30,8 +30,9 @@ export function signatureGuard<T>(
                 parsed.signingString.replace("&", "?");
             }
         }
-        console.log("Signature Verified"+httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem));
-        if (!httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem)) {
+        const verified = httpSignature.verifySignature(parsed, actor.publicKey.publicKeyPem);
+        console.log("Signature Verified: "+verified);
+        if (!verified) {
             return sendResError(res, 400, "Signature could not be verified with public key.");
         }
 
