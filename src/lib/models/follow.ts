@@ -6,6 +6,7 @@ import { IObject, isActor } from "lib/activities/type";
 import { generatePostHeaders, getApObjectBody } from "lib/activities/utils";
 import { getFollowersUri, getIndexUri, getUserStatusFromUri, getUserUri, PublicStream } from "lib/uris";
 import { prisma } from "server/db/client";
+import { ActivityStreamsContext } from "lib/activities/contexts";
 
 export default class FollowModel {
     constructor(private readonly prismaFollow: PrismaClient["follow"]) {}
@@ -41,7 +42,7 @@ export default class FollowModel {
                     }
                 });
                 const acceptFollowRequest: IAccept = {
-                    "@context": "https://www.w3.org/ns/activitystreams",
+                    "@context": ActivityStreamsContext,
                     id: getFollowersUri(`${userIndex}`),
                     type: "Accept",
                     actor: getUserUri(`${userIndex}`),
