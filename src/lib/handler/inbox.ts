@@ -15,20 +15,21 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     }
     const parsed = (await compact(req.body)) as unknown as IObject;
     
-    if (isCreate(parsed) || isUpdate(parsed)) {
+    if (isFollow(parsed)) {
+        return await new FollowModel(prisma.follow).fromFollow(parsed);
+    }
+    else if (isCreate(parsed) || isUpdate(parsed)) {
         const body = await getApObjectBody(parsed.object);
         if (!Array.isArray(body) && isPost(body)) {
-            await new StatusModel(prisma.status).createFromNote(body);
+            return await new StatusModel(prisma.status).createFromNote(body);
         }
     }
     else if (isAnnounce(parsed)) {
         const body = await getApObjectBody(parsed.object);
         if (!Array.isArray(body) && isPost(body)) {
-            await new StatusModel(prisma.status).createFromNote(body);
+            return await new StatusModel(prisma.status).createFromNote(body);
         }
     }
-    else if (isFollow(parsed)) {
-        await new FollowModel(prisma.follow).fromFollow(parsed);
-    }
+    
     return res.status(202).send(202);
 };
