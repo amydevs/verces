@@ -215,7 +215,7 @@ enum Visibility {
 }
 
 model Follow {
-  id String @id @default(cuid())
+  id String @id @default(uuid())
   userId String
   user User @relation("FollowOrigin", fields: [userId], references: [id], onDelete: Cascade)
 
