@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
     //         return NextResponse.redirect(new URL(`/@/${pathSplit[1]}`, request.url));
     //     }
     // }
-    // return NextResponse.next();
+    return NextResponse.next();
 }
 
 // See "Matching Paths" below to learn more
