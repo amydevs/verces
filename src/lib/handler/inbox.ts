@@ -15,6 +15,8 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     }
     const parsed = (await compact(req.body)) as unknown as IObject;
     
+    console.log(parsed.type);
+
     if (isFollow(parsed)) {
         return await new FollowModel(prisma.follow).fromFollow(parsed);
     }
