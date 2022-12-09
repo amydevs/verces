@@ -18,18 +18,18 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     console.log(parsed.type);
 
     if (isFollow(parsed)) {
-        return await new FollowModel(prisma.follow).fromFollow(parsed);
+        await new FollowModel(prisma.follow).fromFollow(parsed);
     }
     else if (isCreate(parsed) || isUpdate(parsed)) {
         const body = await getApObjectBody(parsed.object);
         if (!Array.isArray(body) && isPost(body)) {
-            return await new StatusModel(prisma.status).createFromNote(body);
+            await new StatusModel(prisma.status).createFromNote(body);
         }
     }
     else if (isAnnounce(parsed)) {
         const body = await getApObjectBody(parsed.object);
         if (!Array.isArray(body) && isPost(body)) {
-            return await new StatusModel(prisma.status).createFromNote(body);
+            await new StatusModel(prisma.status).createFromNote(body);
         }
     }
     
