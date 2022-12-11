@@ -24,6 +24,10 @@ const config = {
                 destination: "/api/ap/inbox",
             },
             {
+                source: "/nodeinfo",
+                destination: "/api/ap/nodeinfo",
+            },
+            {
                 source: "/users/:user*",
                 destination: "/api/ap/users/:user*",
                 has: [

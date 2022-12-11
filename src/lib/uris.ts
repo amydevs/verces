@@ -9,6 +9,10 @@ export const getIndexUri = ({ protocol, host } = defaultParams) => {
     return new URL(`${protocol}${host}`).toString();
 };
 
+export const getNodeInfoUri = (options = defaultParams) => {
+    return new URL("/nodeinfo", getIndexUri(options)).toString();
+};
+
 export const getUserUri = (user: string, options = defaultParams) => {
     return new URL(`/users/${user}`, getIndexUri(options)).toString();
 };
