@@ -4,6 +4,11 @@ import { getFollowersUri, PublicStream } from "lib/uris";
 
 export type ToCc = { to: string[], cc: string[] };
 
+export const PublicVisibilities = [
+    Visibility.Public,
+    Visibility.Unlisted
+];
+
 export default class VisibilityModel {
     constructor(private readonly visibility: Visibility) {}
 
