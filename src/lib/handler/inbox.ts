@@ -18,7 +18,7 @@ export const inboxHandler = async (req: NextApiRequest, res: NextApiResponse) =>
     console.log(parsed.type);
 
     if (isFollow(parsed)) {
-        await new FollowModel(prisma.follow).fromFollow(parsed);
+        await new FollowModel(prisma.follow).createFromFollow(parsed);
     }
     else if (isCreate(parsed) || isUpdate(parsed)) {
         const body = await getApObjectBody(parsed.object);

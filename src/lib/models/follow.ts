@@ -10,7 +10,7 @@ import { ActivityStreamsContext } from "lib/activities/contexts";
 
 export default class FollowModel {
     constructor(private readonly prismaFollow: PrismaClient["follow"]) {}
-    fromFollow = async (follow: IFollow | string) => {
+    createFromFollow = async (follow: IFollow | string) => {
         const gotFollow = getApObjectBody(follow) as unknown as IFollow;
         const targetActorUri = typeof gotFollow.actor === "string" ? gotFollow.actor : gotFollow.actor.id;
         if (targetActorUri?.startsWith(getIndexUri())) {
