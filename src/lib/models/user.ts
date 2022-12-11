@@ -6,7 +6,7 @@ import { getIndexUri, getUserStatusFromUri } from "lib/uris";
 export default class UserModel {
     constructor(private readonly prismaUser: PrismaClient["user"]) {}
 
-    fromActor = async (actor: IActor | string) => {
+    createFromActor = async (actor: IActor | string) => {
         const actorId = typeof actor === "string" ? actor : actor.id;
         if (actorId?.startsWith(getIndexUri())) {
             const { userIndex } = getUserStatusFromUri(actorId);

@@ -41,7 +41,7 @@ export default class StatusModel {
         
         const gotDoc = await getApObjectBody(doc) as IPost;
         const actor = await getApObjectBody(gotDoc.attributedTo as string, { cache: "force-cache" }) as IActor; // force attributedTo to be a string as it will always exist on a note :3
-        const user = await new User(prisma.user).fromActor(actor);
+        const user = await new User(prisma.user).createFromActor(actor);
         const toCc = VisibilityModel.toCcNormalizer(gotDoc);
         const visibility = VisibilityModel.getVisibility(toCc, actor.followers?.toString() ?? "");
     

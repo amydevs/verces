@@ -16,7 +16,7 @@ export default class FollowModel {
         if (targetActorUri?.startsWith(getIndexUri())) {
             const body = await getApObjectBody(gotFollow.object) as IActor;
             if (isActor(body)) {
-                const fromUser = await new UserModel(prisma.user).fromActor(body);
+                const fromUser = await new UserModel(prisma.user).createFromActor(body);
                 const { userIndex } = getUserStatusFromUri(targetActorUri);
                 const follow = await this.prismaFollow.create({
                     include: {
