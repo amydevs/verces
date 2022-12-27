@@ -21,54 +21,14 @@ model Example {
 }
 
 model OauthApplication {
-  id           String             @default(cuid()) @id
-  name         String
-  clientId     String             @unique @default(cuid())
-  clientSecret String
-  redirectUris Json               @default("[]")
-  scopes       Json               @default("[]")
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @default(now()) @updatedAt
-  grants       Json               @default("[]")
-  accessTokens OauthAccessToken[]
-  accessGrants OauthAccessGrant[]
-}
-
-model OauthAccessToken {
-  id                    String           @default(cuid()) @id
-  userId                String
-  applicationId         String
-  token                 String           @unique
-  refreshToken          String?          @unique
-  tokenExpiresAt        DateTime?        
-  refreshTokenExpiresAt DateTime?
-  scopes                Json             @default("[]")
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @default(now()) @updatedAt 
-  application           OauthApplication @relation(fields: [applicationId], references: [id])
-  user                  User             @relation(fields: [userId], references: [id])
-
-  @@index([applicationId])
-  @@index([userId])
-}
-
-model OauthAccessGrant {
-  id            String           @default(cuid()) @id
-  userId        String
-  applicationId String
-  token         String           @unique
-  expiresAt     DateTime
-  redirectUri   String
-  codeChallengeMethod String?
-  codeChallenge String?
-  scopes        Json             @default("[]")
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @default(now()) @updatedAt
-  application   OauthApplication @relation(fields: [applicationId], references: [id])
-  user          User             @relation(fields: [userId], references: [id])
-
-  @@index([applicationId])
-  @@index([userId])
+  id             String @id @default(cuid())
+  client_name    String
+  client_id      String @unique @default(cuid())
+  client_secret  String
+  redirect_uris  Json   @default("[]")
+  scope          String
+  grant_types    Json   @default("[]")
+  response_types Json   @default("[]")
 }
 
 // Necessary for Next auth
@@ -106,28 +66,25 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  
-  accessTokens      OauthAccessToken[]
-  accessGrants      OauthAccessGrant[]
 
   displayName String? // Display Name
 
-  host String @default("") // Empty if local instance to allow for unique check.
-  uri String? @unique // Unique on nullable fields don't error when the repetitive value is Null.
-  url String? @unique
+  host String  @default("") // Empty if local instance to allow for unique check.
+  uri  String? @unique // Unique on nullable fields don't error when the repetitive value is Null.
+  url  String? @unique
 
   keyPair KeyPair?
 
   statuses         Status[]
   receivedReplies  Reply[]
   receivedMentions Mention[]
-  restatuses ReStatus[]
+  restatuses       ReStatus[]
 
   following Follow[] @relation("FollowOrigin")
   followers Follow[] @relation("FollowTarget")
 
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @default(now()) @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([name, host])
 }
@@ -136,7 +93,7 @@ model KeyPair {
   userId String @id
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  publicKey  String @unique
+  publicKey  String  @unique
   privateKey String?
 }
 
@@ -149,7 +106,7 @@ model VerificationToken {
 }
 
 model Status {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
   text String @db.Text
 
@@ -157,7 +114,7 @@ model Status {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   mentions   Mention[]
-  replies    Reply[]   @relation("StatusReplies")
+  replies    Reply[]    @relation("StatusReplies")
   replyingTo Reply?
   restatuses ReStatus[]
 
@@ -215,12 +172,12 @@ enum Visibility {
 }
 
 model Follow {
-  id String @id @default(uuid())
+  id     String @id @default(uuid())
   userId String
-  user User @relation("FollowOrigin", fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation("FollowOrigin", fields: [userId], references: [id], onDelete: Cascade)
 
   targetUserId String
-  targetUser User @relation("FollowTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+  targetUser   User   @relation("FollowTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

@@ -1,9 +1,9 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import provider from "server/oauth";
+import generateProvider from "server/oauth";
 
 
 const oauth = async (req: NextApiRequest, res: NextApiResponse) => {
-    await provider.callback()(req, res);
+    await (await generateProvider()).callback()(req, res);
 };
 
 export default oauth;
