@@ -10,7 +10,7 @@ export const appsRouter = router({
         .input(z.object({
             client_name: z.string(),
             redirect_uris: z.string(),
-            scopes: z.string().optional(),
+            scopes: z.string().optional().default("read"),
             website: z.string().optional()
         }))
         .output(z.object({
@@ -25,20 +25,21 @@ export const appsRouter = router({
         .mutation(async ({input}) => {            
             const application = await prisma.oauthApplication.create({
                 data: {
-                    name: input.client_name,
-                    scopes: input.scopes?.split(" "),
-                    redirectUris: [input.redirect_uris],
-                    clientSecret: await generateSecret()
+                    client_name: input.client_name,
+                    scope: input.scopes,
+                    redirect_uris: [input.redirect_uris],
+                    client_secret: await generateSecret(),
+
                 }
             });
             
             return {
                 id: application.id,
-                name: application.name,
+                name: application.client_name,
                 website: input.website,
-                redirect_uri: input.redirect_uris,
-                client_id: application.clientId,
-                client_secret: application.clientSecret,
+                redirect_uri: application.redirect_uris,
+                client_id: application.client_id,
+                client_secret: application.client_secret,
             };
         })
 });
