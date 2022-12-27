@@ -7,6 +7,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 import { generateKeyPair } from "lib/signature";
+import { getIndexUri } from "lib/uris.js";
 
 const giveKeysToUserIfNone = async (userId: string) => {
     const keys = await generateKeyPair();
@@ -57,12 +58,17 @@ export const authOptions: NextAuthOptions = {
                 };
             },
         }),
-        {
-            id: "mastodon",
-            name: "Mastodon",
-            type: "oauth",
-            wellKnown: ""
-        }
+        // {
+        //     id: "mastodon",
+        //     name: "Mastodon",
+        //     type: "oauth",
+        //     wellKnown: new URL("/.well-known/openid-configuration", getIndexUri()).toString(),
+        //     async profile(profile) {
+        //         return {
+
+        //         };
+        //     }
+        // }
     // ...add more providers here
     ],
 };
