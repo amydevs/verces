@@ -1,6 +1,7 @@
 import Provider from "oidc-provider";
+import { getIndexUri } from "lib/uris";
 
-const provider = new Provider("http://localhost:3000/", {
+const provider = new Provider(getIndexUri(), {
     routes: {
         authorization: "/oauth/authorize",
         token: "/oauth/token",
