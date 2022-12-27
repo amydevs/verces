@@ -56,7 +56,13 @@ export const authOptions: NextAuthOptions = {
                     image: profile.picture,
                 };
             },
-        })
+        }),
+        {
+            id: "mastodon",
+            name: "Mastodon",
+            type: "oauth",
+            wellKnown: ""
+        }
     // ...add more providers here
     ],
 };

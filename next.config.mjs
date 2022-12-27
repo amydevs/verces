@@ -33,6 +33,10 @@ const config = {
                 source: "/oauth/:path*",
                 destination: "/api/oauth/:path*"
             },
+            {
+                source: "/.well-known/openid-configuration",
+                destination: "/api/oauth/.well-known/openid-configuration"
+            },
 
             // Users
             {
