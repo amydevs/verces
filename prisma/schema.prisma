@@ -28,7 +28,7 @@ model OauthApplication {
   redirect_uris  Json   @default("[]")
   scope          String
   grant_types    Json   @default("[]")
-  response_types Json   @default("[]")
+  response_types Json   @default("[\"code\"]")
 }
 
 // Necessary for Next auth
