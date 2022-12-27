@@ -37,7 +37,7 @@ export const appsRouter = router({
                 id: application.id,
                 name: application.client_name,
                 website: input.website,
-                redirect_uri: application.redirect_uris,
+                redirect_uri: input.redirect_uris,
                 client_id: application.client_id,
                 client_secret: application.client_secret,
             };
