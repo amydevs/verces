@@ -27,7 +27,7 @@ model OauthApplication {
   client_secret  String
   redirect_uris  Json   @default("[]")
   scope          String
-  grant_types    Json   @default("[]")
+  grant_types    Json   @default("[\"authorization_code\"]")
   response_types Json   @default("[\"code\"]")
 }
 
