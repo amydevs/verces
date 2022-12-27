@@ -19,7 +19,8 @@ const generateProvider = async () => {
             },
             ...(await prisma.oauthApplication.findMany() as any)
         ],
-        scopes: ["read", "write", "follow", "push", "admin"]
+        scopes: ["read", "write", "follow", "push", "admin"],
+        responseTypes: ["code"]
     });
 };
 
