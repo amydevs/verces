@@ -27,6 +27,14 @@ const config = {
                 source: "/nodeinfo",
                 destination: "/api/ap/nodeinfo",
             },
+            
+            // OAuth
+            {
+                source: "/oauth/:path*",
+                destination: "/api/oauth/:path*"
+            },
+
+            // Users
             {
                 source: "/users/:user*",
                 destination: "/api/ap/users/:user*",
@@ -59,7 +67,8 @@ const config = {
                         value: "(?<b>.*application\\/activity\\+json.*)"
                     }
                 ]
-            }
+            },
+
         ];
     },
     async redirects () {
