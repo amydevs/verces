@@ -18,7 +18,8 @@ const generateProvider = async () => {
                 scope: "openid",
             },
             ...(await prisma.oauthApplication.findMany() as any)
-        ]
+        ],
+        scopes: ["read", "write", "follow", "push", "admin"]
     });
 };
 
