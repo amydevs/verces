@@ -4,6 +4,7 @@ import { version } from "../../../../../package.json";
 import { z } from "zod";
 import { appsRouter } from "./apps";
 import { statusesRouter } from "./statuses";
+import { accountsRouter } from "./accounts";
 
 export const v1Router = router({
     instance: publicProcedure
@@ -25,6 +26,7 @@ export const v1Router = router({
                 description: "Serverless Activitypub"
             };
         }),
+    accounts: accountsRouter,
     apps: appsRouter,
     statuses: statusesRouter
 });
