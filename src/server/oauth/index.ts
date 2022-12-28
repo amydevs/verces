@@ -22,8 +22,7 @@ const generateProvider = async () => {
         scopes: ["read", "write", "follow", "push", "admin"],
         responseTypes: ["code"],
         pkce: {
-            methods: ["S256"],
-            required: () => true
+            required: () => false
         },
     });
 };
