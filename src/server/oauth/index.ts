@@ -23,9 +23,13 @@ const generateProvider = async () => {
             ...(await prisma.oauthApplication.findMany() as any)
         ],
         scopes: ["read", "write", "follow", "push", "admin"],
+        claims: {
+            openid: ["sub"],
+            email: ["email", "email_verified"]
+        },
         responseTypes: ["code"],
         pkce: {
-            methods: ["S256", "plain"],
+            methods: ["S256"],
             required: () => false
         },
         features: {
