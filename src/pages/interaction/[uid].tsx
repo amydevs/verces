@@ -1,4 +1,4 @@
-import { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import generateProvider from "server/oauth";
 import type Provider from "oidc-provider";
 
