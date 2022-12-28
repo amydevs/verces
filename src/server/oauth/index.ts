@@ -37,7 +37,10 @@ const generateProvider = async () => {
                 enabled: false
             }
         },
-        adapter: PrismaAdapter
+        adapter: PrismaAdapter,
+        findAccount: async () => {
+            return undefined;
+        }
     });
 };
 
