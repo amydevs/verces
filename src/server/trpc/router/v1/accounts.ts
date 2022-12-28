@@ -1,6 +1,5 @@
-import { url } from "inspector";
 import { publicProcedure, router } from "server/trpc/trpc";
-import { string, z } from "zod";
+import { z } from "zod";
 
 export const accountsRouter = router({
     get: publicProcedure
