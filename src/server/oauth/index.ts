@@ -28,6 +28,11 @@ const generateProvider = async () => {
             methods: ["S256", "plain"],
             required: () => false
         },
+        features: {
+            devInteractions: {
+                enabled: false
+            }
+        },
         adapter: PrismaAdapter
     });
 };
