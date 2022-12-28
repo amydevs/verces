@@ -9,7 +9,7 @@ interface InteractionPageProps {
 export const getServerSideProps: GetServerSideProps<InteractionPageProps> = async (context) => {
     const { req, res } = context;
     const provider = await generateProvider();
-    const details = await provider.interactionDetails(req, res);
+    const details = JSON.parse(JSON.stringify(await provider.interactionDetails(req, res)));
     return {
         props: {
             details
@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps<InteractionPageProps> = asyn
 };
 
 const InteractionPage: NextPage<InteractionPageProps> = (props) => {
-    props.details.prompt.details;
+    console.log(props);
     return (
         <form>
 
