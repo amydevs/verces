@@ -1,6 +1,7 @@
 import Provider from "oidc-provider";
 import { getIndexUri } from "lib/uris";
 import { prisma } from "server/db/client";
+import { env } from "env/server.mjs";
 
 const generateProvider = async () => {
     return new Provider(getIndexUri(), {
@@ -11,8 +12,8 @@ const generateProvider = async () => {
         },
         clients: [
             {
-                client_id: "app",
-                client_secret: "secret",
+                client_id: "webapp",
+                client_secret: env.NEXTAUTH_SECRET,
                 redirect_uris: ["http://localhost:3000/cb"],
                 grant_types: ["authorization_code"],
                 scope: "openid",

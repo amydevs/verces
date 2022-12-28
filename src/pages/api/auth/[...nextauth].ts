@@ -72,7 +72,10 @@ export const authOptions: NextAuthOptions = {
                     image: profile.avatar_static,
                     email: null,
                 };
-            }
+            },
+            clientId: "webapp",
+            clientSecret: env.NEXTAUTH_SECRET,
+            issuer: getIndexUri(),
         }
     // ...add more providers here
     ],
