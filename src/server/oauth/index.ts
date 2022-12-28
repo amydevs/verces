@@ -14,7 +14,7 @@ const generateProvider = async () => {
             {
                 client_id: "webapp",
                 client_secret: env.NEXTAUTH_SECRET,
-                redirect_uris: ["http://localhost:3000/cb"],
+                redirect_uris: [new URL("/api/auth/callback/mastodon", getIndexUri()).toString()],
                 grant_types: ["authorization_code"],
                 scope: "openid",
             },

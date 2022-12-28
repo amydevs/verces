@@ -62,9 +62,9 @@ export const authOptions: NextAuthOptions = {
             id: "mastodon",
             name: "Mastodon",
             type: "oauth",
-            wellKnown: new URL("/.well-known/openid-configuration", getIndexUri()).toString(),
             authorization: new URL("/oauth/authorize", getIndexUri()).toString(),
             token: new URL("/oauth/token", getIndexUri()).toString(),
+            userinfo: new URL("/api/v1/accounts/verify_credentials", getIndexUri()).toString(),
             async profile(profile) {
                 return {
                     id: profile.id,
