@@ -24,10 +24,6 @@ const config = {
                 source: "/.well-known/openid-configuration",
                 destination: "/api/oauth/.well-known/openid-configuration"
             },
-            {
-                source: "/interaction/:path*",
-                destination: "/api/oauth/interaction/:path*"
-            },
 
             // ActivityPub
             {
