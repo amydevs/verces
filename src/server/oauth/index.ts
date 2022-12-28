@@ -3,6 +3,8 @@ import { getIndexUri } from "lib/uris";
 import { prisma } from "server/db/client";
 import { env } from "env/server.mjs";
 
+import { PrismaAdapter } from "./prisma-adapter";
+
 const generateProvider = async () => {
     return new Provider(getIndexUri(), {
         routes: {
@@ -26,6 +28,7 @@ const generateProvider = async () => {
             methods: ["S256", "plain"],
             required: () => false
         },
+        adapter: PrismaAdapter
     });
 };
 
