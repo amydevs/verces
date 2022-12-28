@@ -15,6 +15,17 @@ const config = {
     // },
     async rewrites() {
         return [
+            // OAuth
+            {
+                source: "/oauth/:path*",
+                destination: "/api/oauth/:path*"
+            },
+            {
+                source: "/.well-known/openid-configuration",
+                destination: "/api/oauth/.well-known/openid-configuration"
+            },
+
+            // ActivityPub
             {
                 source: "/.well-known/:path*",
                 destination: "/api/ap/.well-known/:path*"
@@ -26,16 +37,6 @@ const config = {
             {
                 source: "/nodeinfo",
                 destination: "/api/ap/nodeinfo",
-            },
-            
-            // OAuth
-            {
-                source: "/oauth/:path*",
-                destination: "/api/oauth/:path*"
-            },
-            {
-                source: "/.well-known/openid-configuration",
-                destination: "/api/oauth/.well-known/openid-configuration"
             },
 
             // Users

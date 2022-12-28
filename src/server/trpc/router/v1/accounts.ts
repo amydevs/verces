@@ -1,12 +1,22 @@
 import { url } from "inspector";
 import { publicProcedure, router } from "server/trpc/trpc";
-import { z } from "zod";
+import { string, z } from "zod";
 
 export const accountsRouter = router({
     get: publicProcedure
         .meta({ openapi: { method: "GET", path: "/v1/accounts/{userIndex}" } })
         .input(z.object({
             userIndex: z.string()
+        }))
+        .output(z.object({
+            id: z.string(),
+            username: z.string(),
+            acct: z.string(),
+            display_name: z.string().nullable(),
+            locked: z.boolean(),
+            bot: z.boolean(),
+            created_at: z.string(),
+            note: z.string()
         }))
         .query(async ({input, ctx}) => {
             const user = await ctx.prisma.user.findFirstOrThrow({
