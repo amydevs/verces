@@ -7,7 +7,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 import { generateKeyPair } from "lib/signature";
-import { getIndexUri } from "lib/uris.js";
+import { getIndexUri } from "lib/uris";
 
 const giveKeysToUserIfNone = async (userId: string) => {
     const keys = await generateKeyPair();
