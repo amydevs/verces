@@ -31,6 +31,21 @@ model OauthApplication {
   response_types Json   @default("[\"code\"]")
 }
 
+model OidcModel {
+  id         String    @id
+  type       Int // name of the oidc-provider model
+  payload    Json
+  grantId    String?
+  userCode   String?
+  uid        String?   @unique
+  expiresAt  DateTime?
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  @@unique([id, type])
+  @@map("oidc_model")
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
