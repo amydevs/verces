@@ -18,7 +18,7 @@ const generateProvider = async () => {
                 client_secret: env.NEXTAUTH_SECRET,
                 redirect_uris: [new URL("/api/auth/callback/mastodon", getIndexUri()).toString()],
                 grant_types: ["authorization_code"],
-                scope: "openid",
+                scope: "read write follow push admin",
             },
             ...(await prisma.oauthApplication.findMany() as any)
         ],
