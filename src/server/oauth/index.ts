@@ -38,8 +38,26 @@ const generateProvider = async () => {
             }
         },
         adapter: PrismaAdapter,
-        findAccount: async () => {
-            return undefined;
+        findAccount: async (_ctx, id) => {
+            const user = await prisma.user.findFirst({
+                where: {
+                    id
+                }
+            });
+            if (!user) {
+                return undefined;
+            }
+
+            return {
+                accountId: id,
+                claims(_use, _scope, _claims, _rejected) {
+                    return {
+                        sub: id,
+                        email: user.email,
+                        email_verified: user.emailVerified
+                    };
+                },
+            };
         }
     });
 };
